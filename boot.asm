@@ -3,7 +3,7 @@
 %define VGA_MODE13_HEIGHT 200
 
 section .text
-	global_start
+	global _start
 
 _start:
 	cli					; clear interruption
@@ -13,29 +13,35 @@ _start:
 	int 15h				; open 20address gate 
 	
 	call mode13h
-	mov es, 0xa0000	
+	mov ax, 0xa000
+	mov es, ax		; the start point of vga memory
+	mov bp, 0x0
 	
 	mov cx, 200			; iterative setting color
-.a
+.a:
 	mov dx, 320
-.b
-	mov cl, 13			;
-	dec dx, 1
+	dec cx
+	jz .c
+.b:
+	mov cl, 1
+	call pixel
+	dec dx
+	jz .a
+	jmp .b
+.c:	
 	
-
-
 	mov si, DAPACK		; address of "disk address packet"
 	mov ah, 0x42		; AL is unused
 	mov dl, 0x80		; drive number 0 (OR the drive # with 0x80)
 	int 0x13
 	;jc short .error
 
-.loop
-	jmp .loop
+.loop:
+	jmp .loop			; stop it here
 
 mode13h:
 	mov ah, 0
-	mov al, 0x13		£»320x200x8 bit [mode 0x13]
+	mov al, 0x13		;320x200x8 bit [mode 0x13]
 	int 0x10
 	ret
 
@@ -56,8 +62,8 @@ pixel:
 	popa
 	ret
 
-_section .data
-logo db 'Jerry @ Feb ,2016 copyright'
+section .data
+logo db 'Jerry @ Feb ,2016 copyright',0
 
 
 DAPACK:
