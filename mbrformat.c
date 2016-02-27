@@ -5,30 +5,34 @@
 #define sectors 0x10
 #define total (sectors+1)*maxn
 int a[total];
-int main()
+void readfile(char * fname,int offset)
 {
-	FILE* fi=fopen("boot.img","r");
-	FILE* fo=fopen("boot512b.img","w");
+	FILE* fi=fopen(fname,"r");
 	int cnt=0;
 	int i;
-	while (!feof(fi) && cnt <maxn)
+	while (!feof(fi))
 	{
-		a[cnt]=fgetc(fi);
+		a[cnt+offset]=fgetc(fi);
 		cnt++;
 	}
-	for (i=cnt;i<maxn;i++)
+	fclose(fi);
+	return;
+}
+
+int main()
+{
+	FILE* fo=fopen("boot512b.img","w");
+	int i;
+	for (i=0;i<total;i++)
 	{
 		a[i]=0x90;
 	}
+	readfile("boot.img",0);
+	readfile("elfloader.img",512);
 	a[510]=0x55;
 	a[511]=0xaa;
-	for (i=maxn;i<sectors*maxn;i++)
-	{
-		a[i]=0x0;
-	}
 	for (i=0;i<total;i++)
 		fprintf(fo,"%c",a[i]);
-	fclose(fi);
 	fclose(fo);
 }
 
