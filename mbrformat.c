@@ -2,14 +2,14 @@
 #include "string.h"
 
 #define maxn 512
-#define sectors 0x10
-#define total (sectors+1)*maxn
+#define sectors 0x110
+#define total (sectors)*maxn
+#define GAME_START 0x10
 int a[total];
 void readfile(char * fname,int offset)
 {
 	FILE* fi=fopen(fname,"r");
 	int cnt=0;
-	int i;
 	while (!feof(fi))
 	{
 		a[cnt+offset]=fgetc(fi);
@@ -29,6 +29,7 @@ int main()
 	}
 	readfile("boot.img",0);
 	readfile("elfloader.img",512);
+	readfile("game.o",512*GAME_START);
 	a[510]=0x55;
 	a[511]=0xaa;
 	for (i=0;i<total;i++)

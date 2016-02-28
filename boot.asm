@@ -69,27 +69,29 @@ _start:
 ;-----------------------;
 ;load gdt table
 ;\\\\\\\\\\\\\\\\\\\\\\\;
-	mov cx, [ADDR_GDT]
-	mov [STYPE],BYTE 10000010B	;SYS DATA
-	call gdtload
+	mov  bx,WORD [ADDR_GDT]
+	mov [bx], DWORD 0x0
+	add bx, 4
+	mov [bx], DWORD 0x0	;NULL entry
 	mov cx, [ADDR_GDT]
 	add cx, 0x08
-	mov [STYPE],BYTE 10001010B	;SYS CODE
+	mov [STYPE],BYTE 10010010B	;SYS DATA
 	call gdtload
 	mov cx, [ADDR_GDT]
 	add cx, 0x10
-	mov [STYPE],BYTE 11100010B	;USER DATA
+	mov [STYPE],BYTE 10011010B	;SYS CODE
 	call gdtload
 	mov cx, [ADDR_GDT]
 	add cx, 0x18
-	mov [STYPE],BYTE 11101010B	;USER CODE
+	mov [STYPE],BYTE 11110010B	;USER DATA
+	call gdtload
+	mov cx, [ADDR_GDT]
+	add cx, 0x20
+	mov [STYPE],BYTE 11111010B	;USER CODE
 	call gdtload
 	lgdt [REG_GDT]
 	sgdt [TEMP]
-	mov ax, 0x0
-	jmp 0x0:f
-f:
-	mov ax, 0x8
+	mov ax, 0x10
 	mov ds, ax
 	mov ss, ax
 	mov es, ax
@@ -100,15 +102,15 @@ f:
 ;-----------------------;
 ;change into protected mode
 ;\\\\\\\\\\\\\\\\\\\\\\\;
-mov eax, cr0
-or ax, 0x1
-mov esp, 0x8000000		;128 MB
+mov eax, 0x1
+mov esp, 0x4000000		;64 MB
 mov cr0, eax
-;dw 0xea66 				;ljmp
-;dd 0x8000				;protected mode entry
-;dw 0x0					;seg selector
-jmp 0x8000
-dw 0x0
+db 0xea 				;ljmp
+dw 0x8000				;protected mode entry
+dw 0x08					;seg selector
+;jmp 0x0:0x8000
+;dw 0x0
+;jmp dword 0x8:0x8000
 ;-----------------------;
 
 .loop:
@@ -168,18 +170,18 @@ logo db 'Jerry @ Feb ,2016 copyright',0
 ; regeister of gdt
 ;\\\\\\\\\\\\\\\\\\\\\\\;
 REG_GDT:
-	dw 0x200			; size of gdt 256 entries
+	dw 0x40			; size of gdt 256 entries
 ADDR_GDT:
 	dd 0x7e00			; address of gdt
 ;-----------------------;
 
 ;-----------------------;
-; regeister of gdt
+; regeister of idt
 ;\\\\\\\\\\\\\\\\\\\\\\\;
 REG_IDT:
-	dw 0x200			; size of gdt 256 entries
+	dw 0x200			; size of idt 256 entries
 ADDR_IDT:
-	dd 0x0000			; address of gdt
+	dd 0x0000			; address of idt
 ;-----------------------;
 
 ;-----------------------;
@@ -198,8 +200,9 @@ STYPE:
 ;-----------------------;
 	
 TEMP:
-DD 0x0
-DW 0x0
+dd 0x0
+dd 0x0
+
 	
 
 ;-----------------------;
