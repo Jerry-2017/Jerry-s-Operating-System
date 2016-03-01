@@ -2,7 +2,7 @@
 #include "string.h"
 
 #define maxn 512
-#define sectors 0x110
+#define sectors 0x1000
 #define total (sectors)*maxn
 #define GAME_START 0x10
 int a[total];
