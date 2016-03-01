@@ -1,6 +1,7 @@
 #include "../include/common.h"
 #include "../include/x86.h"
 #define SECTSIZE 512
+
 void waitdisk(void)
 {
     // wait for disk reaady
@@ -26,3 +27,15 @@ void readsect(void *dst, uint32_t offset)
     // read a sector
     insl(0x1F0, dst, SECTSIZE/4);
 }
+
+void readsects(void *dst, uint32_t offset, uint32_t count)
+{
+	int cnt=0;
+	while (cnt<count)
+	{
+		readsect(dst+cnt*SECTSIZE,offset);
+		offset++;
+		cnt++;
+	}
+}
+

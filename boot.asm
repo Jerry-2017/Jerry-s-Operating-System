@@ -91,23 +91,36 @@ _start:
 	call gdtload
 	lgdt [REG_GDT]
 	sgdt [TEMP]
-	mov ax, 0x10
-	mov ds, ax
-	mov ss, ax
-	mov es, ax
 ;-----------------------;
 
 
 
 ;-----------------------;
 ;change into protected mode
+;and refresh segment register (important)
 ;\\\\\\\\\\\\\\\\\\\\\\\;
-mov eax, 0x1
+mov eax, cr0
+or eax, 0x1
 mov esp, 0x4000000		;64 MB
+mov ebp, 0x4000000
+mov ebx, 0
+mov ecx, 0
+mov edx, 0
+mov edi, 0
+mov esi, 0
 mov cr0, eax
+
+;segment refresh
+mov ax, 0x8
+mov es, ax
+mov ss, ax
+mov ds, ax
+mov fs, ax
+mov gs, ax
+mov ax, 0
 db 0xea 				;ljmp
 dw 0x8000				;protected mode entry
-dw 0x08					;seg selector
+dw 0x10					;seg selector
 ;jmp 0x0:0x8000
 ;dw 0x0
 ;jmp dword 0x8:0x8000

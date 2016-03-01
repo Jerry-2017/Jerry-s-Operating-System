@@ -3,4 +3,5 @@
 #include "common.h"
 void waitdisk(void);
 void readsect(void *dst, uint32_t offset);
+void readsects(void *dst, uint32_t offset, uint32_t count);
 #endif

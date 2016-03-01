@@ -29,6 +29,7 @@ int main()
 	}
 	readfile("boot.img",0);
 	readfile("elfloader.img",512);
+//	readfile("iofunc.img",512*5);
 	readfile("game.o",512*GAME_START);
 	a[510]=0x55;
 	a[511]=0xaa;
