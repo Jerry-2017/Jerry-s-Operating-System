@@ -5,7 +5,10 @@ start:
 	make -C ./src
 
 game.o : game.c
-	gcc game.c -m32 -c -o gamet.o -fno-builtin -std=gnu11 && ld -o game.o gamet.o
+	gcc game.c -m32 -c -MD -fno-builtin -std=gnu11 
+#&& ld -o game.o gamet.o ./
+sinclude %.d
+
 run: boot512b.img
 	$(QEMU) $(QEMU_OPTIONS) boot512b.img
 elfloader.o: elfloader.c
