@@ -9,7 +9,8 @@ CFLAGS += -std=gnu11 -m32 -c #编译标准, 目标架构, 只编�?
 CFLAGS += -I $(ROOT_DIR) #头文件搜索目�?
 CFLAGS += -O0 #不开优化, 方便调试
 CFLAGS += -fno-builtin #禁止内置函数
-CFLAGS += -ggdb3 #GDB调试信息
+CFLAGS += -ggdb3 #GDB调试信�
+CFLAGS += -fno-stack-protector
 
 SOURCES = $(wildcard *.c)
 OBJS := $(patsubst %.c, %.o,$(SOURCES))

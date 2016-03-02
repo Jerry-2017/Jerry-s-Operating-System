@@ -6,12 +6,12 @@ boot512b.img : start  boot.img mbrformat.o elfloader.s game.o elftest.o
 ROOT_DIR = $(CURDIR)  
 start:
 	$(MAKE) -C ./src
-#	$(MAKE) -C ./game
+	$(MAKE) -C ./game
 
 elftest.o : ./game/elft.c start 
 	gcc -o elftest.o ./game/elft.c -I $(ROOT_DIR) && ./elftest.o 
 
-GAME_OBJECT := ./game/game.o ./src/device/com.o
+GAME_OBJECT := ./game/game.o ./src/device/com.o ./src/common/printk.o ./src/common/mystring.o
 ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o
 game.o : $(GAME_OBJECT)
 	ld -o game.o $(GAME_OBJECT) --entry main
