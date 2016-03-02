@@ -12,7 +12,7 @@ int main()
 	uint32_t dst;
 	dst=LOADING_ENTRY;
 //	readsect(GAME_SECTORS,0x20,dst);
-	readsects((void*)dst,GAME_SECTORS,0x1000);
+	readsects((void*)dst,GAME_SECTORS,0x2000);
 	while (1)
 	{
 		uint32_t tp=load_elf(LOADING_ENTRY);

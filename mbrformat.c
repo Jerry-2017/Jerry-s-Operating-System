@@ -2,7 +2,7 @@
 #include "string.h"
 
 #define maxn 512
-#define sectors 0x1000
+#define sectors 0x2000
 #define total (sectors)*maxn
 #define GAME_START 0x10
 int a[total];
@@ -19,6 +19,7 @@ void readfile(char * fname,int offset)
 	return;
 }
 
+
 int main()
 {
 	FILE* fo=fopen("boot512b.img","w");
@@ -31,8 +32,10 @@ int main()
 	readfile("elfloader.img",512);
 //	readfile("iofunc.img",512*5);
 	readfile("game.o",512*GAME_START);
+	readfile("./res/pizza.raw",0x21*512);
 	a[510]=0x55;
 	a[511]=0xaa;
+//	resformat();
 	for (i=0;i<total;i++)
 		fprintf(fo,"%c",a[i]);
 	fclose(fo);

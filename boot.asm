@@ -46,7 +46,30 @@ _start:
 	dec bx
 	jmp .b
 .d:	
-;-----------------------;
+;-----------------------;	
+
+;set vbes
+mov ax, 0x4f02		;1024*768*32
+mov bx, 0x0118
+or bx, 0x4000
+int 0x10;
+
+;get vbe mode
+
+mov ax, 0x4f00
+mov edi, 0x8400
+mov cx, 0x0
+mov es, cx
+int 0x10	;*($edi+14)	next table
+
+mov ax, 0x4f01
+mov cx, 0x4118
+int 0x10
+mov eax, [edi+18+0x16]  ;the required address
+mov [0x79f0], eax		;saved at 
+mov eax, [edi+0x10]		;pitch
+mov [0x79f4], eax
+
 
 
 ;-----------------------;

@@ -7,11 +7,12 @@ ROOT_DIR = $(CURDIR)
 start:
 	$(MAKE) -C ./src
 	$(MAKE) -C ./game
+	$(MAKE) -C ./tool
 
 elftest.o : ./game/elft.c start 
 	gcc -o elftest.o ./game/elft.c -I $(ROOT_DIR) && ./elftest.o 
 
-GAME_OBJECT := ./game/game.o ./src/device/com.o ./src/common/printk.o ./src/common/mystring.o
+GAME_OBJECT := ./game/game.o ./src/device/com.o ./src/common/printk.o ./src/common/mystring.o ./src/device/svga.o
 ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o
 game.o : $(GAME_OBJECT)
 	ld -o game.o $(GAME_OBJECT) --entry main
@@ -42,6 +43,8 @@ clean :
 	find . -name "*.d"  | xargs rm -f
 	find . -name "*.d.*"  | xargs rm -f
 	find . -name "*.swp"  | xargs rm -f
+	find . -name "*.bmp"  | xargs rm -f
+	find . -name "*.raw"  | xargs rm -f
 	rm -f -r *.o *~ *.img *.s *.bin *.d.* *d *.mk
 
 gdb:
@@ -54,6 +57,7 @@ QEMU_OPTIONS := -serial stdio #以标准输入输为串�?COM1)
 QEMU_OPTIONS += -m 256
 QEMU_OPTIONS += -d int #输出中断信息
 QEMU_OPTIONS += -monitor telnet:127.0.0.1:1111,server,nowait #telnet monitor
+QEMU_OPTIONS += -vga std 
 
 QEMU_DEBUG_OPTIONS := -S #启动不执�?
 QEMU_DEBUG_OPTIONS += -s #GDB调试服务�? 127.0.0.1:1234

@@ -38,6 +38,7 @@ int u2s(uint32_t val, char * string)
 		s++;
 		e--;
 	}
+	if (i==0) string[i++]='0';
 	string[i]='\0';
 	return i;
 }
@@ -65,17 +66,18 @@ int i2s(int val, char * string)
 		s++;
 		e--;
 	}
+	if (i==s) string[i++]='0';
 	string[i]='\0';
 	return i;
 }
 
-int x2s(int val, char * string)
+int x2s(uint32_t val, char * string)
 {
 	int i=0;
 	int s=i;
 	while (val!=0 && i<MAX_STRING)
 	{
-		int j=val%16;
+		uint32_t j=val%16;
 		string[i++]=x2c(j);
 		val/=16;
 	}
@@ -88,6 +90,7 @@ int x2s(int val, char * string)
 		s++;
 		e--;
 	}
+	if (i==0) string[i++]='0';
 	string[i]='\0';
 	return i;
 }
