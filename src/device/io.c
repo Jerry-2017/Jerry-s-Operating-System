@@ -1,5 +1,5 @@
-#include "../include/common.h"
-#include "../include/x86.h"
+#include "include/common/common.h"
+#include "include/device/x86.h"
 #define SECTSIZE 512
 
 void waitdisk(void)

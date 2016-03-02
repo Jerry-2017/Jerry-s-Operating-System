@@ -1,20 +1,28 @@
 .PHONY	: commit clean debug gdb run elfloader.o start
-boot512b.img : start boot.img mbrformat.o elfloader.s game.o iofunc.img
-	./mbrformat.o
-start:
-	make -C ./src
+export
 
-game.o : game.c
-	gcc game.c -m32 -c -MD -fno-builtin -std=gnu11 
+boot512b.img : start  boot.img mbrformat.o elfloader.s game.o elftest.o
+	./mbrformat.o
+ROOT_DIR = $(CURDIR)  
+start:
+	$(MAKE) -C ./src
+#	$(MAKE) -C ./game
+
+elftest.o : ./game/elft.c start 
+	gcc -o elftest.o ./game/elft.c -I $(ROOT_DIR) && ./elftest.o 
+
+GAME_OBJECT := ./game/game.o ./src/device/com.o
+ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o
+game.o : $(GAME_OBJECT)
+	ld -o game.o $(GAME_OBJECT) --entry main
 #&& ld -o game.o gamet.o ./
-sinclude %.d
 
 run: boot512b.img
 	$(QEMU) $(QEMU_OPTIONS) boot512b.img
 elfloader.o: elfloader.c
-	gcc elfloader.c -o elfloader.o -fno-builtin -std=gnu11 -m32 -c
+	gcc elfloader.c -o elfloader.o -fno-builtin -std=gnu11 -m32 -c -I $(ROOT_DIR)
 elfloader.s: elfloader.o 
-	ld -o elfloadertp.o -Ttext 0x8000 -m elf_i386 -nostdlib -e main elfloader.o ./src/io.o ./src/elf.o && \
+	ld -o elfloadertp.o -Ttext 0x8000 -m elf_i386 -nostdlib -e main $(ELFLOADER_OBJECT)  && \
 	objcopy --strip-all --only-section=.text -S -O binary elfloadertp.o elfloader.img && \
 	objdump -D -b binary -m i386 elfloader.img > elfloader.s
 mbrformat.o:
@@ -34,7 +42,7 @@ clean :
 	find . -name "*.d"  | xargs rm -f
 	find . -name "*.d.*"  | xargs rm -f
 	find . -name "*.swp"  | xargs rm -f
-	rm -f -r *.o *~ *.img *.s *.bin *.d.* *.d
+	rm -f -r *.o *~ *.img *.s *.bin *.d.* *d *.mk
 
 gdb:
 	$(GDB) $(GDB_OPTIONS)
@@ -43,7 +51,7 @@ debug:
 	$(QEMU) $(QEMU_DEBUG_OPTIONS) $(QEMU_OPTIONS) boot512b.img
 
 QEMU_OPTIONS := -serial stdio #以标准输入输为串�?COM1)
-QEMU_OPTIONS := -m 256
+QEMU_OPTIONS += -m 256
 QEMU_OPTIONS += -d int #输出中断信息
 QEMU_OPTIONS += -monitor telnet:127.0.0.1:1111,server,nowait #telnet monitor
 
@@ -54,3 +62,5 @@ GDB_OPTIONS := -ex "target remote 127.0.0.1:1234"
 GDB_OPTIONS += -ex "symbol boot512b.img"
 QEMU    := qemu-system-i386
 GDB     := gdb
+MAKE	:= make
+

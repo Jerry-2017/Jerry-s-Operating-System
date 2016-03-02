@@ -6,7 +6,7 @@ SUBDIRS := $(shell ls -l | grep ^d | awk '{if($$9 != "debug") print $$9}')
 
 CFLAGS := -Wall -Werror -Wfatal-errors #开启所有警�? 视警告为错误, 第一个错误结束编�?
 CFLAGS += -std=gnu11 -m32 -c #编译标准, 目标架构, 只编�?
-CFLAGS += -I . #头文件搜索目�?
+CFLAGS += -I $(ROOT_DIR) #头文件搜索目�?
 CFLAGS += -O0 #不开优化, 方便调试
 CFLAGS += -fno-builtin #禁止内置函数
 CFLAGS += -ggdb3 #GDB调试信息
@@ -14,6 +14,7 @@ CFLAGS += -ggdb3 #GDB调试信息
 SOURCES = $(wildcard *.c)
 OBJS := $(patsubst %.c, %.o,$(SOURCES))
 CC = gcc
+MAKE = make
 main: $(OBJS) $(SUBDIRS)
 	@echo "source files:" $(SOURCES)
 	@echo "object files:" $(OBJS)
@@ -26,6 +27,6 @@ main: $(OBJS) $(SUBDIRS)
 	$(RM) $@.$$$$
 sinclude $(SOURCES:.c=.d)
 $(SUBDIRS):ECHO
-	make -C $@
+	$(MAKE) -C $@
 ECHO:
 	@echo $(SUBDIRS)

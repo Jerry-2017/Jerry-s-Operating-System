@@ -1,5 +1,4 @@
-#include "./include/elf.h"
-//#include "../include/io.h"
+#include "include/file/elf.h"
 #include "stdio.h"
 #include "string.h"
 
@@ -7,6 +6,8 @@
 char a[maxn];
 int main()
 {
+	printf("\n");
+	printf("running elf header test program\n");
 	FILE *fp=fopen("game.o","rb");
 	int cnt=0;
 	while (!feof(fp))
@@ -17,10 +18,11 @@ int main()
 	struct ELFHeader *pelfhead=(void *)a;
 	uint32_t entry=pelfhead->entry;
 	uint32_t phoff=pelfhead->phoff;
-	uint32_t phentsize=pelfhead->phentsize;
+//	uint32_t phentsize=pelfhead->phentsize;
 	uint32_t phnum=pelfhead->phnum;
 	struct ProgramHeader *pprghead=(void*)(a+phoff);
 	int i=0;
+	//printf("%d\n",phnum);
 	for (i=0;i<phnum;i++)
 	{
 		uint32_t offset=pprghead->off;
@@ -36,5 +38,6 @@ int main()
 		printf("paddr:%x filesz:%x memsz:%x offset:%x vaddr:%x\n",paddr,filesz,memsz,offset,vaddr);
 		pprghead++;
 	}
-	return entry;
+	printf("entry: 0x%x\n",entry);
+	return 0;
 }

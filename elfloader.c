@@ -1,6 +1,6 @@
-#include "./include/io.h"
-#include "./include/common.h"
-#include "./include/elf.h"
+#include "./include/device/io.h"
+#include "./include/common/common.h"
+#include "./include/file/elf.h"
 //#include "string.h"
 #define LOADING_ENTRY 0x100000
 #define GAME_SECTORS 0x10

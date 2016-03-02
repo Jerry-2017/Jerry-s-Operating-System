@@ -1,4 +1,4 @@
-#include "./include/com.h"
+#include "../include/device/com.h"
 int main()
 {
 	output("it's the start of Jerry's game, enjoy it\n");

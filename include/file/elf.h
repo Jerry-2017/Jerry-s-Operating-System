@@ -1,6 +1,6 @@
 #ifndef __ELF_H__
 #define __ELF_H_
-#include "common.h"
+#include "include/common/common.h"
 struct ELFHeader {
     unsigned int   magic;
     unsigned char  elf[12];

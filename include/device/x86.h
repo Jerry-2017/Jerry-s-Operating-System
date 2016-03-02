@@ -1,7 +1,7 @@
 #ifndef JOS_INC_X86_H
 #define JOS_INC_X86_H
 
-#include "common.h"
+#include "include/common/common.h"
 
 static __inline void breakpoint(void) __attribute__((always_inline));
 static __inline uint8_t inb(int port) __attribute__((always_inline));
