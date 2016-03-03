@@ -12,10 +12,11 @@ start:
 elftest.o : ./game/elft.c start 
 	gcc -o elftest.o ./game/elft.c -I $(ROOT_DIR) && ./elftest.o 
 
-GAME_OBJECT := ./game/game.o ./src/device/com.o ./src/common/printk.o ./src/common/mystring.o ./src/device/svga.o
+GAME_OBJECT := ./game/game.o ./src/device/com.o ./src/common/printk.o ./src/common/mystring.o ./src/device/svga.o ./src/common/rvgs.o ./src/common/rngs.o
 ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o
 game.o : $(GAME_OBJECT)
 	ld -o game.o $(GAME_OBJECT) --entry main -lm
+	objdump -D -m i386 game.o > game.s
 #&& ld -o game.o gamet.o ./
 
 run: boot512b.img
@@ -55,7 +56,7 @@ debug:
 
 QEMU_OPTIONS := -serial stdio #以标准输入输为串�?COM1)
 QEMU_OPTIONS += -m 256
-QEMU_OPTIONS += -d int #输出中断信息
+#QEMU_OPTIONS += -d int #输出中断信息
 QEMU_OPTIONS += -monitor telnet:127.0.0.1:1111,server,nowait #telnet monitor
 QEMU_OPTIONS += -vga std 
 
