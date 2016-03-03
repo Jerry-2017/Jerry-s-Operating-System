@@ -16,6 +16,15 @@ int main()
 			addr=(uint32_t*)(((char*)addr)+3);
 		}
 	}
+	int cnt=5;
+	for (int i=0;i<cnt;i++)
+	{
+		line (i*1024/cnt,0,i*1024/cnt,768,0x111111,0x2);	
+	}
+	for (int i=0;i<cnt;i++)
+	{
+		line (0,i*768/cnt,1024,i*768/cnt,0x111111,0x2);	
+	}
 	cp_image();
 	while (1)
 	{

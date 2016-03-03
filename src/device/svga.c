@@ -1,5 +1,6 @@
 #include "include/device/x86.h"
 #include "include/common/printk.h"
+#include "math.h"
 #define SVGA_ADDR 0x79f0 
 /*#define VBE_DISPI_IOPORT_INDEX			0x01CE
 #define VBE_DISPI_IOPORT_DATA			0x01CF
@@ -39,6 +40,8 @@ static char vga_buffer[MAX_Y*MAX_X*3];
 
 // xres 1024 yres 768 bpp 32bit : 0x00RRGGBB
 void dirty(uint32_t,uint32_t);
+void point(uint32_t,uint32_t,uint32_t);
+void line(uint32_t,uint32_t,uint32_t,uint32_t,uint32_t,uint32_t);
 
 void vbe_set(uint16_t xres, uint16_t yres, uint16_t bpp)
 {
@@ -64,6 +67,8 @@ void dirty (uint32_t x,uint32_t y)
 
 void point (uint32_t x, uint32_t y, uint32_t color)
 {
+	if (!(x>=0 && x<vga_x && y>=0 && y<vga_y))
+		return;
 	dirty(x,y);	
 	uint32_t i;
 	for (i=0;i<3;i++)
@@ -101,6 +106,61 @@ void cp_image()
 			{
 				vga_page[j][i]=0;
 				cp_block(j,i);
+			}
+		}
+	}
+}
+
+void line(uint32_t x1,uint32_t y1,uint32_t x2,uint32_t y2,uint32_t color,uint32_t breadth)
+{
+	uint32_t i,j;
+	if (x1==x2) 
+	{
+		if (y1>y2) {
+			y1+=y2;
+			y2=y1-y2;
+			y1=y1-y2;
+		}
+		for (i=x1-breadth;i<=x1+breadth;i++)
+		{
+			for (j=y1;j<=y2;j++)
+				point(i,j,color);
+		}
+	}
+	else if (y1==y2) 
+	{
+		if (x1>x2) {
+			x1+=x2;
+			x2=x1-x2;
+			x1=x1-x2;
+		}
+		for (i=y1-breadth;i<=y1+breadth;i++)
+		{
+			for (j=x1;j<=x2;j++)
+				point(j,i,color);
+		}
+	}
+	else
+	{
+		double vt=(double)(y2-y1)/(x2-x1);
+		double l=sqrt(1+vt*vt);
+		double vtx=1/l;
+		double vty=vt/l;
+
+		double vttx=-vt/l;
+		double vtty=vtx;
+
+		uint32_t li=round(sqrt((y2-y1)*(y2-y1)+(x2-x1)*(x2-x1)));
+		for (i=0;i<li;i++)
+		{
+			double cx=x1+vtx*i;
+			double cy=y1+vty*i;
+			for (j=0;j<breadth;j++)
+			{
+				double cx1=j*vttx;
+				double cy1=j*vtty;
+				point(round(cx+cx1),round(cy+cy1),color);
+				point(round(cx-cx1),round(cy-cy1),color);
 			}
 		}
 	}

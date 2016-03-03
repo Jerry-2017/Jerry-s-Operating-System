@@ -15,7 +15,7 @@ elftest.o : ./game/elft.c start
 GAME_OBJECT := ./game/game.o ./src/device/com.o ./src/common/printk.o ./src/common/mystring.o ./src/device/svga.o
 ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o
 game.o : $(GAME_OBJECT)
-	ld -o game.o $(GAME_OBJECT) --entry main
+	ld -o game.o $(GAME_OBJECT) --entry main -lm
 #&& ld -o game.o gamet.o ./
 
 run: boot512b.img
@@ -35,7 +35,7 @@ iofunc.img : iofunc.asm
 	nasm -f bin -o iofunc.img iofunc.asm &&  objdump -D -b binary -m i386 iofunc.img >iofunc.s
 
 
-commit : 
+commit : clean 
 	git add -A && git commit
 
 clean :
