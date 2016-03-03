@@ -4,5 +4,6 @@
 #define SVGA_ADDR 0xe0000000
 void vbe_set(uint16_t xres, uint16_t yres, uint16_t bpp);
 //void vbe_write(uint16_t index,uint16_t  value);
-void cp_image(uint32_t*);
+void cp_image();
+void point(uint32_t,uint32_t,uint32_t);
 #endif

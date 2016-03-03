@@ -24,6 +24,13 @@
 uint16_t vga_x,vga_y;
 uint32_t svga_addr;
 uint16_t pitch;
+#define BLOCK_SIZE 0x10
+#define MAX_Y 768
+#define MAX_X 1024
+#define PIXEL_PHYADDR(X,Y,I) ((uint32_t)(Y) * pitch + (X) *3+ (I))
+#define PIXEL_MEMADDR(X,Y,I) ((uint32_t)(Y) * vga_x *3+ (X) *3+ (I))
+static bool vga_page[MAX_X/BLOCK_SIZE][MAX_Y/BLOCK_SIZE];
+static char vga_buffer[MAX_Y*MAX_X*3];
 /*void vbe_write(uint16_t index,uint16_t  value)
 {
    outw(VBE_DISPI_IOPORT_INDEX, index);
@@ -31,12 +38,14 @@ uint16_t pitch;
 }*/
 
 // xres 1024 yres 768 bpp 32bit : 0x00RRGGBB
+void dirty(uint32_t,uint32_t);
 
 void vbe_set(uint16_t xres, uint16_t yres, uint16_t bpp)
 {
-	svga_addr=*((uint32_t*)SVGA_ADDR);
-	pitch=*((uint16_t*)SVGA_ADDR+4); 
-	printk("The svga stream entry address is %x\n",svga_addr);	
+	svga_addr=(*((uint32_t*)SVGA_ADDR));
+	pitch=*((uint16_t*)(SVGA_ADDR+4));
+	printk("The svga stream entry address is %x\nthe pitch is %x\n",svga_addr,pitch);	
+	printk("VGA_BUFFER address is %x\n",vga_buffer);
 	vga_x=xres;
 	vga_y=yres;
 /*	vga_x=xres;
@@ -48,19 +57,51 @@ void vbe_set(uint16_t xres, uint16_t yres, uint16_t bpp)
 	vbe_write(VBE_DISPI_INDEX_ENABLE, VBE_DISPI_ENABLED | VBE_DISPI_LFB_ENABLED);   */
 }
 
-void cp_image(uint32_t *addr)
+void dirty (uint32_t x,uint32_t y)
 {
-	int total=(int)vga_x*vga_y*3/4;
-	uint32_t *taddr=(uint32_t*)svga_addr;
-	int c=0;
-	for (int i=0;i<total;i++)
-	{
-		if (c++==vga_x) {
-			c=0;
-			taddr+=pitch/4;
-		}
-		if (c>100)
-			*(taddr++)=*(addr++);
+	vga_page[x/BLOCK_SIZE][y/BLOCK_SIZE]=1;
+}
 
+void point (uint32_t x, uint32_t y, uint32_t color)
+{
+	dirty(x,y);	
+	uint32_t i;
+	for (i=0;i<3;i++)
+	{
+		vga_buffer[PIXEL_MEMADDR(x,y,i)]=color;
+		color>>=8;
+	}
+}
+
+void cp_block(uint32_t bx,uint32_t by)
+{
+	//printk("vgax :%x pitch:%x\n",vga_x,pitch);
+	uint32_t i,j;
+	by*=BLOCK_SIZE;
+	bx*=BLOCK_SIZE;
+	//printk("block %x %x, shift %x\n",bx,by,PIXEL_PHYADDR(bx,by,0));
+	for (i=0;i<BLOCK_SIZE;i++) 
+		for (j=0;j<BLOCK_SIZE*3;j++) 
+		{
+	//	uint32_t hs=
+	//	uint32_t ms=PIXEL_MEMADDR(bx,by+i,0);
+			*(uint8_t*)(svga_addr+PIXEL_PHYADDR(bx,by+i,j))=*(vga_buffer+PIXEL_MEMADDR(bx,by+i,j));
+		}
+}
+	
+
+void cp_image()
+{
+	int i,j;
+	for (i=0;i<vga_y/BLOCK_SIZE;i++)
+	{
+		for (j=0;j<vga_x/BLOCK_SIZE;j++)
+		{
+			if (vga_page[j][i]!=0)
+			{
+				vga_page[j][i]=0;
+				cp_block(j,i);
+			}
+		}
 	}
 }
