@@ -25,7 +25,7 @@
 uint16_t vga_x,vga_y;
 uint32_t svga_addr;
 uint16_t pitch;
-#define BLOCK_SIZE 0x10
+#define BLOCK_SIZE 0x20
 #define MAX_Y 768
 #define MAX_X 1024
 #define PIXEL_PHYADDR(X,Y,I) ((uint32_t)(Y) * pitch + (X) *3+ (I))

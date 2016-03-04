@@ -7,7 +7,7 @@ SUBDIRS := $(shell ls -l | grep ^d | awk '{if($$9 != "debug") print $$9}')
 CFLAGS := -Wall -Werror -Wfatal-errors #开启所有警�? 视警告为错误, 第一个错误结束编�?
 CFLAGS += -std=gnu11 -m32 -c #编译标准, 目标架构, 只编�?
 CFLAGS += -I $(ROOT_DIR) #头文件搜索目�?
-CFLAGS += -O0 #不开优化, 方便调试
+CFLAGS += -O1 #不开优化, 方便调试
 CFLAGS += -fno-builtin #禁止内置函数
 CFLAGS += -ggdb3 #GDB调试信�
 CFLAGS += -fno-stack-protector

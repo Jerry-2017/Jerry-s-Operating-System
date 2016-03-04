@@ -73,17 +73,41 @@ void draw_line()
 	}
 }
 
+void ioinit()
+{
+	ioinit8259();
+	timer_init();
+	keyboard_init();
+	init_idt();
+	printk("init io pass\n");
+}
+
+void draw_circle(int bx,int by)
+{
+	int cnt=BLOCK;
+	for (int i=bx;i<bx+2;i++)
+	{
+		line (i*1024/cnt,by*768/cnt,i*1024/cnt,(by+1)*768/cnt,0xF0FFF0,0x2);	
+	}
+	for (int i=by;i<by+2;i++)
+	{
+		line (bx*1024/cnt,i*768/cnt,(bx+1)*1024/cnt,i*768/cnt,0xF0FFF0,0x2);	
+	}
+}
+
 int main()
 {
 	output("it's the start of Jerry's game, enjoy it\n");
 	vbe_set(1024,768,24);
 	printk_test();	
 	initperm();
-	printk("init pass\n");
+	printk("init game pass\n");
+	ioinit();
 	//int cnt=BLOCK;
 	for (int i=0;i<BLOCK*BLOCK;i++)
 		draw(i);
-	draw_line();
+//	draw_line();
+	int sx=0,sy=0;
 /*	for (int j=0;j<768;j++)
 	{
 		for (int i=0;i<1024;i++)
@@ -93,18 +117,51 @@ int main()
 		}
 	}	*/
 	printk("draw pass\n");
-
-	cp_image();
-	ioinit8259();
-	timer_init();
-	keyboard_init();
-	init_idt();
-	printk("init idt pass\n");
-
+	int state=1;
+	int dir[4][2]={{-1,0},{1,0},{0,-1},{0,1}};
 	while (1)
 	{
-		//printk("%d\n",*((uint32_t*)0xe000000));
-	//	printk("running\n");
+	//		72
+	// 75    <   > 77
+	// 		80
+		draw_line();
+		draw_circle(sx,sy);
+		cp_image();
+		int b=-1;
+		while (!(b>=0 && b<=4))
+		{
+			b=get_key();
+			switch(b)
+			{
+				case 75:
+					b=0;break;
+				case 77:
+					b=1;break;
+				case 72:
+					b=2;break;
+				case 80:
+					b=3;break;
+				case 0x9c:
+					b=4;
+			}
+		}
+		int tx=sx+dir[b][0];
+		int ty=sy+dir[b][1];
+		if (b==4) state=1-state;
+		if (tx>=0 && ty>=0 && tx<BLOCK && ty<BLOCK)
+		{
+			if (state)
+			{
+				int t1=p[ty*BLOCK+tx];
+				int t2=p[sy*BLOCK+sx];
+				p[ty*BLOCK+tx]=t2;
+				p[sy*BLOCK+sx]=t1;
+				draw(ty*BLOCK+tx);
+				draw(sy*BLOCK+sx);
+			}
+			sx=tx;
+			sy=ty;
+		}
 
 	}
 	return 0;
