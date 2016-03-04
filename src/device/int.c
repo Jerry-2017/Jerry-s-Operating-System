@@ -1,7 +1,8 @@
 #include "include/device/int.h"
 #include "include/device/x86.h"
 #include "include/common/printk.h"
-
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
 #define IO_PIC1 0x20
 #define IO_PIC2 0xA0
 #define IRQ_OFFSET 0x20
@@ -214,3 +215,5 @@ void PIC_sendEOI(unsigned char irq)
 		outb(IO_PIC2,PIC_EOI);	
 	outb(IO_PIC1,PIC_EOI);
 }
+
+#pragma GCC pop_options

@@ -90,7 +90,7 @@ void cp_block(uint32_t bx,uint32_t by)
 		{
 	//	uint32_t hs=
 	//	uint32_t ms=PIXEL_MEMADDR(bx,by+i,0);
-			*(uint8_t*)(svga_addr+PIXEL_PHYADDR(bx,by+i,j))=*(vga_buffer+PIXEL_MEMADDR(bx,by+i,j));
+			*((uint8_t*)(svga_addr+PIXEL_PHYADDR(bx,by+i,j)))=*((uint8_t*)vga_buffer+PIXEL_MEMADDR(bx,by+i,j));
 		}
 }
 	
