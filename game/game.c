@@ -1,8 +1,11 @@
+#include "include/device/int.h"
 #include "include/device/com.h"
 #include "include/common/common.h"
 #include "include/common/printk.h"
 #include "include/device/svga.h"
 #include "include/common/rvgs.h"
+#include "include/device/timer.h"
+#include "include/device/keyboard.h"
 
 #define VGAX 1024
 #define VGAY 768
@@ -57,27 +60,9 @@ void draw(int i)
 	}
 }
 
-
-int main()
+void draw_line()
 {
-	output("it's the start of Jerry's game, enjoy it\n");
-	vbe_set(1024,768,24);
-	printk_test();	
-	initperm();
-	printk("init pass\n");
 	int cnt=BLOCK;
-	for (int i=0;i<BLOCK*BLOCK;i++)
-		draw(i);
-/*	for (int j=0;j<768;j++)
-	{
-		for (int i=0;i<1024;i++)
-		{
-			
-			point(i,j,*addr);
-			addr=(uint32_t*)(((char*)addr)+3)
-		}
-	}	*/
-	printk("draw pass\n");
 	for (int i=0;i<cnt;i++)
 	{
 		line (i*1024/cnt,0,i*1024/cnt,768,0x111111,0x2);	
@@ -86,10 +71,40 @@ int main()
 	{
 		line (0,i*768/cnt,1024,i*768/cnt,0x111111,0x2);	
 	}
+}
+
+int main()
+{
+	output("it's the start of Jerry's game, enjoy it\n");
+	vbe_set(1024,768,24);
+	printk_test();	
+	initperm();
+	printk("init pass\n");
+	//int cnt=BLOCK;
+	for (int i=0;i<BLOCK*BLOCK;i++)
+		draw(i);
+	draw_line();
+/*	for (int j=0;j<768;j++)
+	{
+		for (int i=0;i<1024;i++)
+		{		
+			point(i,j,*addr);
+			addr=(uint32_t*)(((char*)addr)+3);
+		}
+	}	*/
+	printk("draw pass\n");
+
 	cp_image();
+	ioinit8259();
+	timer_init();
+	keyboard_init();
+	init_idt();
+	printk("init idt pass\n");
+
 	while (1)
 	{
 		//printk("%d\n",*((uint32_t*)0xe000000));
+	//	printk("running\n");
 
 	}
 	return 0;
