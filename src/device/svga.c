@@ -2,6 +2,8 @@
 #include "include/common/printk.h"
 #include "math.h"
 #define SVGA_ADDR 0x79f0 
+#pragma GCC push_options
+#pragma GCC optimize("O3")
 /*#define VBE_DISPI_IOPORT_INDEX			0x01CE
 #define VBE_DISPI_IOPORT_DATA			0x01CF
 #define VBE_DISPI_INDEX_ID				0x0
@@ -25,7 +27,7 @@
 uint16_t vga_x,vga_y;
 uint32_t svga_addr;
 uint16_t pitch;
-#define BLOCK_SIZE 0x20
+#define BLOCK_SIZE 0x08
 #define MAX_Y 768
 #define MAX_X 1024
 #define PIXEL_PHYADDR(X,Y,I) ((uint32_t)(Y) * pitch + (X) *3+ (I))
@@ -165,3 +167,4 @@ void line(uint32_t x1,uint32_t y1,uint32_t x2,uint32_t y2,uint32_t color,uint32_
 		}
 	}
 }
+#pragma GCC pop_options

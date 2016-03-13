@@ -45,7 +45,7 @@ clean :
 	find . -name "*.d.*"  | xargs rm -f
 	find . -name "*.swp"  | xargs rm -f
 	find . -name "*.bmp"  | xargs rm -f
-	find . -name "*.raw"  | xargs rm -f
+	#find . -name "*.raw"  | xargs rm -f
 	find . -name "*.s"  | xargs rm -f
 	find . -name "*.img"  | xargs rm -f
 	rm -f -r *.o *~ *.img *.s *.bin *.d.* *d *.mk
