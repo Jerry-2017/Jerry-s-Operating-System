@@ -2,7 +2,7 @@
 #include "stdio.h"
 #include "string.h"
 
-#define maxn 0x10000
+#define maxn 0x100000
 char a[maxn];
 int main()
 {

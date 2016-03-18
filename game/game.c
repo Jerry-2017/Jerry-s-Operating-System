@@ -2,10 +2,12 @@
 #include "include/device/com.h"
 #include "include/common/common.h"
 #include "include/common/printk.h"
+#include "include/sys/display.h"
 #include "include/device/svga.h"
 #include "include/common/rvgs.h"
 #include "include/device/timer.h"
 #include "include/device/keyboard.h"
+#include "include/sys/syscall.h"
 
 #define VGAX 1024
 #define VGAY 768
@@ -78,6 +80,8 @@ void ioinit()
 	ioinit8259();
 	timer_init();
 	keyboard_init();
+	vbe_set(1024,768,24);
+	syscall_init();
 	init_idt();
 	printk("init io pass\n");
 }
@@ -98,7 +102,6 @@ void draw_circle(int bx,int by)
 int main()
 {
 	output("it's the start of Jerry's game, enjoy it\n");
-	vbe_set(1024,768,24);
 	printk_test();	
 	initperm();
 	printk("init game pass\n");

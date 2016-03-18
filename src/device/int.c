@@ -25,6 +25,7 @@ void idt_setting();
 void serv_addr(uint32_t addr,uint32_t num);
 void rawservice();
 void rawexception();
+void rawsyscall();
 void PIC_sendEOI(unsigned char irq); 
 
 void int_set(struct int_gate * ptr,uint32_t offset,uint16_t seg, uint8_t dpl)
@@ -46,6 +47,7 @@ void fill(uint32_t src,uint32_t dst, uint32_t len)
 		src++;
 	}
 }
+
 void idtz()
 {
 	int i=0;
@@ -75,7 +77,7 @@ void init_idt()
 	for (i=0;i<MAX_INT;i++)
 	{
 		uint32_t saddr=SERVICE_BASE+i*JMP_CODE_LEN;
-		if (i<0x20 || i>0x20+15)//intpro[i]==0)
+		if (intpro[i]==0)
 		{
 			char asm_code[JMP_CODE_LEN]="\xcf";
 			fill((uint32_t)asm_code,saddr,0x1);	
@@ -97,6 +99,8 @@ void init_idt()
 			*((uint32_t*)(asm_code+5))=i;
 			if (i>=0x20 && i<=0x20+15)
 				*((uint32_t*)(asm_code+10))=(uint32_t)rawservice;//intpro[i];
+			else if(i>=0x80)
+				 *((uint32_t*)(asm_code+10))=(uint32_t)rawsyscall;
 			else
 				 *((uint32_t*)(asm_code+10))=(uint32_t)rawexception;
 			fill((uint32_t)asm_code,saddr,JMP_CODE_LEN);
@@ -116,13 +120,8 @@ void idt_setting()
 	struct int_gate *tp;
 	for (i=0;i<MAX_INT;i++)
 	{
-		idt[i][0]=0;
-		idt[i][1]=0;
-		if (1 || (i>=8 && i<=9))
-		{
-			tp=(void*)idt[i]; //timer int
-			int_set(tp,SERVICE_BASE+JMP_CODE_LEN*i,0x10,0x0);
-		}
+		tp=(void*)idt[i]; //timer int
+		int_set(tp,SERVICE_BASE+JMP_CODE_LEN*i,0x10,0x0);
 	}
 }
 
@@ -136,8 +135,8 @@ void  rawservice()
 {
 	uint32_t intno;
 	asm("":"=a"(intno)::);
-	if (intno!=0x20)
-		printk("receive int %x\n",intno);
+	//if (intno!=0x20)
+	//	printk("receive int %x\n",intno);
 	if (intpro[intno]!=0)
 	{
 		f=(void*)intpro[intno];
@@ -147,6 +146,17 @@ void  rawservice()
 	{
 		intno-=0x20;
 		PIC_sendEOI(intno);
+	}
+}
+
+void rawsyscall()
+{
+	uint32_t intno,bx,cx,dx;
+	asm("":"=a"(intno),"=b"(bx),"=c"(cx),"=d"(dx):);
+	if (intpro[intno]!=0)
+	{
+		//printk("into raw_sys_call %x\n",intno);
+		((void (*)(uint32_t,uint32_t,uint32_t,uint32_t))intpro[intno]) (intno,bx,cx,dx);
 	}
 }
 

@@ -1,10 +1,5 @@
 #ifndef __SVGA_H__
-#define __SVGA_H_
-#include "include/common/common.h"
-#define SVGA_ADDR 0xe0000000
-void vbe_set(uint16_t xres, uint16_t yres, uint16_t bpp);
-//void vbe_write(uint16_t index,uint16_t  value);
-void cp_image();
-void point(uint32_t,uint32_t,uint32_t);
-void line(uint32_t,uint32_t,uint32_t,uint32_t,uint32_t,uint32_t);
+#define __SVGA_H__
+void cp_block(uint16_t,uint16_t,uint16_t,uint32_t);
+void vbe_set(uint16_t,uint16_t,uint16_t);
 #endif
