@@ -1,6 +1,13 @@
 #include "include/common/common.h"
 #include "include/common/mystring.h"
+#include "include/sys/output.h"
 #include "include/device/com.h"
+
+#ifdef __KERNEL__
+#define OUTFUNC output
+#else
+#define OUTFUNC output_ex
+#endif
 
 void printk(const char* format,...)
 {
@@ -66,13 +73,13 @@ void printk(const char* format,...)
 	}
 	va_end(ap);
 	rst[rl]='\0';
-	output(rst);
+	OUTFUNC(rst);
 	return;
 }
 
 void printk_test()
 {
-	output("the test of printk begins\n");
+	OUTFUNC("the test of printk begins\n");
 	printk("the string test: %s\n","i'm a string");
 	printk("the integer test: %d\n",-12345);
 	printk("the hex test: %x\n",0x1234);

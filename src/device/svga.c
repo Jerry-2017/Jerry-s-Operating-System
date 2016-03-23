@@ -34,7 +34,7 @@ void cp_block(uint16_t height,uint16_t weight,uint16_t blocksize,uint32_t addr)
 
 	uint32_t xl=PIXEL_SIZE(blocksize);
 	int i,j;
-	printk("cp_blcok used h:%x w:%x blksz:%x addr:%x\n",height,weight,blocksize,addr);
+	//printk("cp_blcok used h:%x w:%x blksz:%x addr:%x\n",height,weight,blocksize,addr);
 	//printk("block %x %x, shift %x\n",bx,by,PIXEL_PHYADDR(bx,by,0));
 	for (i=0;i<blocksize;i++) 
 	{

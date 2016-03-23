@@ -7,6 +7,7 @@
 #include "include/common/rvgs.h"
 #include "include/device/timer.h"
 #include "include/device/keyboard.h"
+#include "include/sys/input.h"
 #include "include/sys/syscall.h"
 
 #define VGAX 1024
@@ -77,6 +78,7 @@ void draw_line()
 
 void ioinit()
 {
+#define __KERNEL__
 	ioinit8259();
 	timer_init();
 	keyboard_init();
@@ -84,6 +86,7 @@ void ioinit()
 	syscall_init();
 	init_idt();
 	printk("init io pass\n");
+#undef __KERNEL__
 }
 
 void draw_circle(int bx,int by)
@@ -133,7 +136,7 @@ int main()
 		int b=-1;
 		while (!(b>=0 && b<=4))
 		{
-			b=get_key();
+			b=get_keyex();
 			switch(b)
 			{
 				case 75:

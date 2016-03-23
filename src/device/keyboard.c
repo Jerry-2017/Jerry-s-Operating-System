@@ -3,7 +3,7 @@
 #include "include/device/int.h"
 #include "include/device/x86.h"
 #define BUFFER_LEN 0x200
-uint8_t keyboard_buffer[BUFFER_LEN];
+uint32_t keyboard_buffer[BUFFER_LEN];
 int s,e;
 void keyboard_serv()
 {
@@ -16,7 +16,7 @@ void keyboard_serv()
 	printk("get key inf %x\n",x);
 }
 
-int get_key()
+uint32_t get_key()
 {
 	if (((s+1)%BUFFER_LEN)==e)
 		return -1;

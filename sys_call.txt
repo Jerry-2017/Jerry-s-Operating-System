@@ -1,0 +1,11 @@
+int 0x80 ebx as the call no 
+	fetch an keyboard restored in addr ecx
+2
+
+int 0x81 
+	ebx as starting addr
+	ecx as height and weighth
+	edx as block size
+	syscall in display cp_block_ex
+
+
