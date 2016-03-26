@@ -4,11 +4,11 @@
 
 #define maxn 0x100000
 char a[maxn];
-int main()
+int main(int argc,char *argv[])
 {
 	printf("\n");
 	printf("running elf header test program\n");
-	FILE *fp=fopen("game.o","rb");
+	FILE *fp=fopen(argv[1],"rb");
 	int cnt=0;
 	while (!feof(fp))
 	{

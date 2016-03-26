@@ -1,22 +1,37 @@
 .PHONY	: commit clean debug gdb run elfloader.o start
 export
 
-boot512b.img : start  boot.img mbrformat.o elfloader.s game.o elftest.o
+boot512b.img : start  boot.img mbrformat.o elfloader.s game.o kernel.o elftest.o
 	./mbrformat.o
 ROOT_DIR = $(CURDIR)  
 start:
 	$(MAKE) -C ./src
 	$(MAKE) -C ./game
 	$(MAKE) -C ./tool
+	$(MAKE) -C ./kernel
 
 elftest.o : ./game/elft.c start 
-	gcc -o elftest.o ./game/elft.c -I $(ROOT_DIR) && ./elftest.o 
+	gcc -o elftest.o ./game/elft.c -I $(ROOT_DIR)
+	echo "starting kernel"
+	./elftest.o kernel.o
+	echo "starting game"
+	./elftest.o game.o
+LD_SEG= -Ttext 0x0 -Tbss 0x100000 -Tdata 0x100000
+#-T linker.lds 
 
-GAME_OBJECT := ./game/game.o ./src/device/timer.o ./src/device/keyboard.o ./src/device/int.o ./src/device/com.o ./src/common/printk.o ./src/common/printkex.o ./src/common/mystring.o ./src/device/svga.o ./src/sys/input.o ./src/sys/display.o ./src/sys/output.o ./src/sys/syscall.o ./src/common/rvgs.o ./src/common/rngs.o 
-ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o
+SYS_MOD := ./src/sys/input.o ./src/sys/display.o ./src/sys/output.o ./src/common/printkex.o 
+DEVICE_MOD:= ./src/device/timer.o ./src/device/keyboard.o ./src/device/int.o ./src/device/com.o ./src/device/svga.o ./src/common/printk.o ./src/sys/syscall.o
+COMMON_MOD:= ./src/common/mystring.o ./src/common/rvgs.o ./src/common/rngs.o
+GAME_OBJECT := ./game/game.o $(DEVICE_MOD) $(SYS_MOD) $(COMMON_MOD)
+ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o ./src/device/gdt.o
+KERNEL_OBJECT := ./kernel/kernel.o $(DEVICE_MOD) $(COMMON_MOD)
 game.o : $(GAME_OBJECT)
 	ld -o game.o $(GAME_OBJECT) --entry main -lm
 	objdump -D -m i386 game.o > game.s
+kernel.o : $(KERNEL_OBJECT)
+	ld -o kernel.o $(KERNEL_OBJECT) --entry main -lm --script=linker.lds
+	objdump -D -m i386 kernel.o > kernel.s
+
 #&& ld -o game.o gamet.o ./
 
 run: boot512b.img
@@ -57,7 +72,7 @@ debug:
 	$(QEMU) $(QEMU_DEBUG_OPTIONS) $(QEMU_OPTIONS) boot512b.img
 
 QEMU_OPTIONS := -serial stdio #以标准输入输为串�?COM1)
-QEMU_OPTIONS += -m 256
+QEMU_OPTIONS += -m 256 -d int
 #QEMU_OPTIONS += -d int #输出中断信息
 QEMU_OPTIONS += -monitor telnet:127.0.0.1:1111,server,nowait #telnet monitor
 QEMU_OPTIONS += -vga std 

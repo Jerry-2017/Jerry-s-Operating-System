@@ -4,7 +4,7 @@
 #define maxn 512
 #define sectors 0x2000
 #define total (sectors)*maxn
-#define GAME_START 0x10
+#define KERNEL_START 0x10
 char a[total];
 void readfile(char * fname,int offset,int type)
 {
@@ -36,7 +36,7 @@ int main()
 	readfile("boot.img",0,0);
 	readfile("elfloader.img",512,0);
 //	readfile("iofunc.img",512*5);
-	readfile("game.o",512*GAME_START,0);
+	readfile("kernel.o",512*KERNEL_START,0);
 	readfile("./res/pizza.raw",0x100*512,1);
 	a[510]=0x55;
 	a[511]=0xaa;

@@ -28,5 +28,5 @@ struct ProgramHeader {
     unsigned int flags;
     unsigned int align;
 };
-uint32_t load_elf(uint32_t);
+uint32_t load_elf(uint32_t,uint32_t);
 #endif
