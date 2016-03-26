@@ -206,7 +206,7 @@ logo db 'Jerry @ Feb ,2016 copyright',0
 ; regeister of gdt
 ;\\\\\\\\\\\\\\\\\\\\\\\;
 REG_GDT:
-	dw 0x40			; size of gdt 256 entries
+	dw 0x200			; size of gdt 256 entries
 ADDR_GDT:
 	dd 0x7e00			; address of gdt
 ;-----------------------;

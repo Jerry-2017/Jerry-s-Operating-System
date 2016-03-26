@@ -10,6 +10,7 @@
 #include "include/device/gdt.h"
 #include "include/sys/syscall.h"
 #include "include/device/tss.h"
+#include "include/process/pcb.h"
 
 #define GAME_SECTORS 0x300
 #define GAME_LEN 0x500
@@ -29,16 +30,20 @@ void ioinit()
 
 void loadprog()
 {
+	init_pcb();
 	readsects((void*)PROGRAM_START,GAME_SECTORS,GAME_LEN);
 	readsects((void*)(0x3000000),PIC_START,PIC_LEN);
 	uint32_t tp=load_elf(PROGRAM_START,0x2000000);
 	setgdt(0x28,0x2,0x2000000,0xffffff);
 	setgdt(0x30,0x3,0x2000000,0xffffff);
 	init_tss();
+	int no=new_pcb(0x28+0x3,0x30+0x3,tp);
+/*
 	asm __volatile__("mov %0,%%edx"::"r"(tp):);
 	LOAD_SEG(0x28+0x3);
 	//asm __volatile__("push %%bx\n\tpush %%edx\n\tlret"::"b"(0x30+0x3):);
-	asm __volatile__("push $0x2b\n\tpush $0xffffff\n\tpushf\n\tpush %%ebx\n\tpush %%edx\n\tiret"::"b"(0x30+0x3):); 
+	asm __volatile__("push $0x2b\n\tpush $0xffffff\n\tpushf\n\tpush %%ebx\n\tpush %%edx\n\tiret"::"b"(0x30+0x3):); */
+	start_pcb(no);
 }
 
 int main()
