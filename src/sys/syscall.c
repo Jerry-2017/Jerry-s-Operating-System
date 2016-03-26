@@ -6,7 +6,6 @@
 #include "include/sys/syscall.h"
 #include "include/device/com.h"
 
-#define __KERNEL__
 void syscall_main(uint32_t intno, uint32_t choice, uint32_t ecx, uint32_t edx)
 {
 	printk("into syscall intno:%x ebx:%x ecx:%x edx:%x\n",intno,choice,ecx,edx);
@@ -47,4 +46,3 @@ void syscall_init()
 	serv_addr((uint32_t)syscall_main,0x80);
 	serv_addr((uint32_t)syscall_vga,0x81);	
 }
-#undef __KERNEL__

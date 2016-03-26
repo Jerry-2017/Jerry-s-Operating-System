@@ -1,13 +1,14 @@
 #include "include/device/int.h"
 #include "include/device/com.h"
 #include "include/common/common.h"
-#include "include/common/printk.h"
+#include "include/common/printkex.h"
 #include "include/sys/display.h"
 #include "include/device/svga.h"
 #include "include/common/rvgs.h"
 #include "include/device/timer.h"
 #include "include/device/keyboard.h"
 #include "include/sys/input.h"
+#include "include/sys/output.h"
 #include "include/sys/syscall.h"
 
 #define VGAX 1024
@@ -25,11 +26,11 @@ void initperm()
 	int pl=cnt*cnt;
 	for (int i=0;i<pl;i++)
 		p[i]=-1;
-	printk("rand:");
+	printkex("rand:");
 	for (int i=0;i<pl;i++)
 	{
 		int x=(Equilikely(0,pl-i)&0xff)%(pl-i)+1;
-		printk("%x ",x);
+		printkex("%x ",x);
 		int j=-1;
 		while (x!=0 && j<pl)
 		{
@@ -38,7 +39,7 @@ void initperm()
 		}
 		p[j]=i;
 	}
-	printk("\n");
+	printkex("\n");
 }
 
 void draw(int i)
@@ -49,7 +50,7 @@ void draw(int i)
 	int iy=i/BLOCK;
 	int bx=b%BLOCK;
 	int by=b/BLOCK;
-	printk("%x block addr %x -> %x new block addr %x\n",i,MARK_ADDR4(ix,iy,0,0),b,(addr+MARK_ADDR4(bx,by,0,0)));
+	printkex("%x block addr %x -> %x new block addr %x\n",i,MARK_ADDR4(ix,iy,0,0),b,(addr+MARK_ADDR4(bx,by,0,0)));
 	for (y=0;y<VGAY/BLOCK;y++)
 	{
 		uint32_t dsx=ix*(VGAX/BLOCK);
@@ -78,15 +79,13 @@ void draw_line()
 
 void ioinit()
 {
-#define __KERNEL__
 	ioinit8259();
 	timer_init();
 	keyboard_init();
 	vbe_set(1024,768,24);
 	syscall_init();
 	init_idt();
-	printk("init io pass\n");
-#undef __KERNEL__
+	//printk("init io pass\n");
 }
 
 void draw_circle(int bx,int by)
@@ -104,12 +103,13 @@ void draw_circle(int bx,int by)
 
 int main()
 {
-	output("it's the start of Jerry's game, enjoy it\n");
-	printk_test();	
-	initperm();
-	printk("init game pass\n");
 	ioinit();
-	//int cnt=BLOCK;
+	output_ex("it's the start of Jerry's game, enjoy it\n");
+	initperm();
+
+	printk_test_ex();	
+	printkex("init game pass\n");
+		//int cnt=BLOCK;
 	for (int i=0;i<BLOCK*BLOCK;i++)
 		draw(i);
 //	draw_line();
@@ -122,7 +122,7 @@ int main()
 			addr=(uint32_t*)(((char*)addr)+3);
 		}
 	}	*/
-	printk("draw pass\n");
+	printkex("draw pass\n");
 	int state=1;
 	int dir[4][2]={{-1,0},{1,0},{0,-1},{0,1}};
 	while (1)

@@ -12,7 +12,7 @@ start:
 elftest.o : ./game/elft.c start 
 	gcc -o elftest.o ./game/elft.c -I $(ROOT_DIR) && ./elftest.o 
 
-GAME_OBJECT := ./game/game.o ./src/device/timer.o ./src/device/keyboard.o ./src/device/int.o ./src/device/com.o ./src/common/printk.o ./src/common/mystring.o ./src/device/svga.o ./src/sys/input.o ./src/sys/display.o ./src/sys/output.o ./src/sys/syscall.o ./src/common/rvgs.o ./src/common/rngs.o 
+GAME_OBJECT := ./game/game.o ./src/device/timer.o ./src/device/keyboard.o ./src/device/int.o ./src/device/com.o ./src/common/printk.o ./src/common/printkex.o ./src/common/mystring.o ./src/device/svga.o ./src/sys/input.o ./src/sys/display.o ./src/sys/output.o ./src/sys/syscall.o ./src/common/rvgs.o ./src/common/rngs.o 
 ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o
 game.o : $(GAME_OBJECT)
 	ld -o game.o $(GAME_OBJECT) --entry main -lm

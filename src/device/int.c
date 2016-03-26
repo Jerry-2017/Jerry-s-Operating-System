@@ -152,10 +152,11 @@ void  rawservice()
 void rawsyscall()
 {
 	uint32_t intno,bx,cx,dx;
+
 	asm("":"=a"(intno),"=b"(bx),"=c"(cx),"=d"(dx):);
 	if (intpro[intno]!=0)
 	{
-		//printk("into raw_sys_call %x\n",intno);
+	//	printk("into raw_sys_call %x\n",intno);
 		((void (*)(uint32_t,uint32_t,uint32_t,uint32_t))intpro[intno]) (intno,bx,cx,dx);
 	}
 }

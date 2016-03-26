@@ -1,8 +1,8 @@
 #include "include/common/common.h"
 #include "include/common/mystring.h"
-#include "include/device/com.h"
+#include "include/sys/output.h"
 
-void printk(const char* format,...)
+void printkex(const char* format,...)
 {
 	va_list ap;   
 	
@@ -66,16 +66,16 @@ void printk(const char* format,...)
 	}
 	va_end(ap);
 	rst[rl]='\0';
-	output(rst);
+	output_ex(rst);
 	return;
 }
 
-void printk_test()
+void printk_test_ex()
 {
-	output("the test of printk begins\n");
-	printk("the string test: %s\n","i'm a string");
-	printk("the integer test: %d\n",-12345);
-	printk("the hex test: %x\n",0x1234);
-	printk("test pass\n");
+	printkex("the test of printk begins\n");
+	printkex("the string test: %s\n","i'm a string");
+	printkex("the integer test: %d\n",-12345);
+	printkex("the hex test: %x\n",0x1234);
+	printkex("test pass\n");
 	return;
 }
