@@ -124,8 +124,8 @@ mov [0x79f4], eax
 ;\\\\\\\\\\\\\\\\\\\\\\\;
 mov eax, cr0
 or eax, 0x1
-mov esp, 0x4000000		;64 MB
-mov ebp, 0x4000000
+mov esp, 0xffffff		;16 MB
+mov ebp, 0xffffff
 mov ebx, 0
 mov ecx, 0
 mov edx, 0

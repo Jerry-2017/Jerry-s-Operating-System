@@ -39,7 +39,7 @@ void cp_block(uint16_t height,uint16_t weight,uint16_t blocksize,uint32_t addr,u
 	ma+=off;
 	//asm("mov %%ax,%%es":"=a"(ds)::);
 	//printk("cp_blcok used h:%x w:%x blksz:%x addr:%x\n",height,weight,blocksize,addr);
-	//printk("block %x %x, shift %x\n",bx,by,PIXEL_PHYADDR(bx,by,0));
+//	printk("block h%x w%x, pa %x to ma %x\n",height,weight,pa,ma);
 	for (i=0;i<blocksize;i++) 
 	{
 		for (j=0;j<xl;j++) 

@@ -10,5 +10,5 @@ $(FILE1).raw: $(FILE1).jpg testasm
 	-cp *.raw ../res/
 FILE2=intte
 testasm: $(FILE2).asm
-	-nasm  -o $(FILE2).o $(FILE2).asm &&  objdump -D -b binary -m i386 $(FILE2).o > $(FILE2).s
+	nasm  -o $(FILE2).o $(FILE2).asm &&  objdump -D -b binary -m i386 $(FILE2).o > $(FILE2).s
 

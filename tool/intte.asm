@@ -13,7 +13,22 @@ mov eax,0x1234
 add esp,0x4
 pushad
 popad
-
 mov bp,ss
+push ds
+push es
+nop
+push fs
+nop
+push gs
+pop es
+pop fs
+nop
+pog gs
+nop
+pop ds
+nop
+mov ss,bp
 
-movw ss,bp
+mov es,ax
+mov fs,ax
+mov gs,ax

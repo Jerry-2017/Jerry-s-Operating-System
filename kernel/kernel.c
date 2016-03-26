@@ -29,7 +29,7 @@ void ioinit()
 void loadprog()
 {
 	readsects((void*)PROGRAM_START,GAME_SECTORS,GAME_LEN);
-	readsects((void*)(0x2500000),PIC_START,PIC_LEN);
+	readsects((void*)(0x3000000),PIC_START,PIC_LEN);
 	uint32_t tp=load_elf(PROGRAM_START,0x2000000);
 	setgdt(0x28,0x0,0x2000000,0xffffff);
 	setgdt(0x30,0x1,0x2000000,0xffffff);

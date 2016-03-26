@@ -2,7 +2,7 @@
 #pragma GCC push_options
 #pragma GCC optimize("O3")
 #include "include/device/x86.h"
-#include "include/common/printk.h"
+#include "include/common/printkex.h"
 #include "math.h"
 /*#define VBE_DISPI_IOPORT_INDEX			0x01CE
 #define VBE_DISPI_IOPORT_DATA			0x01CF
@@ -25,12 +25,12 @@
 #define VBE_DISPI_NOCLEARMEM			0x80
 */
 uint16_t vga_x,vga_y;
-uint32_t svga_addr;
-uint16_t pitch;
+//uint32_t svga_addr;
+//uint16_t pitch;
 #define BLOCK_SIZE 0x20
 #define MAX_Y 768
 #define MAX_X 1024
-#define PIXEL_PHYADDR(X,Y,I) ((uint32_t)(Y) * pitch + (X) *3+ (I))
+#define PIXEL_PHYADDR(X,Y,I) PIXEL_MEMADDR(X,Y,I)//((uint32_t)(Y) * pitch + (X) *3+ (I))
 #define PIXEL_MEMADDR(X,Y,I) ((uint32_t)(Y) * vga_x *3+ (X) *3+ (I))
 static bool vga_page[MAX_X/BLOCK_SIZE][MAX_Y/BLOCK_SIZE];
 static char vga_buffer[MAX_Y*MAX_X*3];
@@ -44,6 +44,16 @@ static char vga_buffer[MAX_Y*MAX_X*3];
 void dirty(uint32_t,uint32_t);
 void point(uint32_t,uint32_t,uint32_t);
 void line(uint32_t,uint32_t,uint32_t,uint32_t,uint32_t,uint32_t);
+
+void init_display()
+{
+	int i,j;
+	vga_x=1024;
+	vga_y=768;
+	for (i=0;i<MAX_X/BLOCK_SIZE;i++)
+		for (j=0;j<MAX_Y/BLOCK_SIZE;j++)	
+			vga_page[i][j]=1;
+}
 
 void dirty (uint32_t x,uint32_t y)
 {
@@ -63,23 +73,26 @@ void point (uint32_t x, uint32_t y, uint32_t color)
 	}
 }
 
+#pragma GCC optimize("O0")
 void cp_block_ex(uint32_t bx,uint32_t by)
 {
 	by*=BLOCK_SIZE;
 	bx*=BLOCK_SIZE;
 	uint32_t ecx=(by<<16)|(bx&0xffff);
 	uint32_t ebx=(uint32_t)vga_buffer;
-	uint32_t edx;
-	asm("mov %%ds,%%edx":"=d"(edx)::);
-	edx=((BLOCK_SIZE<<16)&0xffff)|(edx&0xffff);
-	//printk("into cp_block_ex\n");
-	asm("int $0x81"::"c"(ecx),"b"(ebx),"d"(edx):);
+	volatile uint32_t edx;
+	asm __volatile__("mov %%ds,%%dx":"=d"(edx)::);
+	edx=(BLOCK_SIZE<<16)|(edx&0xffff);
+//	printkex("into cp_block_ex\n");
+	asm __volatile__("int $0x81"::"c"(ecx),"b"(ebx),"d"(edx):);
 }
-	
+#pragma GCC optimize("O3")
+
 
 void cp_image()
 {
 	int i,j;
+	//printkex("cpimage page addr %x\n",(uint32_t)vga_page);
 	for (i=0;i<vga_y/BLOCK_SIZE;i++)
 	{
 		for (j=0;j<vga_x/BLOCK_SIZE;j++)

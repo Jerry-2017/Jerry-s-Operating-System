@@ -9,21 +9,22 @@
 
 void syscall_main(uint32_t intno, uint32_t choice, uint32_t ecx, uint32_t edx)
 {
-	printk("into syscall intno:%x ebx:%x ecx:%x edx:%x\n",intno,choice,ecx,edx);
+//	printk("into syscall intno:%x ebx:%x ecx:%x edx:%x\n",intno,choice,ecx,edx);
 	switch (choice)
 	{
 		case 1:		//fetch on keyboard return the keyno into address ebx
 		{
-			uint32_t keyno=get_key();
+			uint32_t keyno=get_key()&0xffff;
 			uint32_t off=getbase(edx);
 			//asm("mov %%ax,%%es\n\tmov %%ebx,%%es:(%%ecx)\n\tmov %%es,%%ds":"=a"(ds),"=b"(keyno&0xffff),"=c"(ecx)::);
-			*((uint32_t*)(ecx+off))=keyno&0xffff;
-//			printk("keyc is %x\n",*(uint32_t*)ecx);
+			*((uint32_t*)(ecx+off))=keyno;
+			if (keyno!=0xffff) printk("keyc is %x\n",keyno);
 			break;
 		}
 		case 2:		// output string through com ecx addr of string
 		{
 			uint32_t off=getbase(edx);
+			//printk("off :%x no: %x\n",off,edx);
 			output((char*)(off+ecx));
 			break;
 		}
@@ -37,7 +38,7 @@ void syscall_vga(uint32_t intno, uint32_t ebx, uint32_t ecx, uint32_t edx)
 {
 	//write the vga from addr dl:ebx of height ch wighth cl
 	 // blocksize dh 
-//	printk("into syscall intno:%x ebx:%x ecx:%x edx:%x\n",intno,ebx,ecx,edx);
+	//printk("into syscall intno:%x ebx:%x ecx:%x edx:%x\n",intno,ebx,ecx,edx);
 	uint16_t height=((uint32_t) ecx)>>16;
 	uint16_t weight=((uint32_t) ecx)&0xFFFF;
 	uint16_t blocksize=((uint32_t)edx)>>16;

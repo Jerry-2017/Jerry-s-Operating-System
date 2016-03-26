@@ -6,4 +6,5 @@
 void cp_image();
 void point(uint32_t,uint32_t,uint32_t);
 void line(uint32_t,uint32_t,uint32_t,uint32_t,uint32_t,uint32_t);
+void init_display();
 #endif

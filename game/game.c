@@ -18,7 +18,7 @@
 #define REAL_ADDR3(x,y,c) (point((x),(y),(c)))
 #define MARK_ADDR4(bx,by,x,y) REAL_ADDR2((bx)*(VGAX/BLOCK)+(x),(by)*(VGAY/BLOCK)+(y))
 #define MARK_ADDR5(bx,by,x,y,c) REAL_ADDR3((bx)*(VGAX/BLOCK)+(x),(by)*(VGAY/BLOCK)+(y),c)
-uint32_t addr=0x500000;//(0x100000+(0x100-0x10)*512);
+uint32_t addr=0x1000000;//(0x100000+(0x100-0x10)*512);
 int p[BLOCK*BLOCK];
 void initperm()
 {
@@ -26,11 +26,11 @@ void initperm()
 	int pl=cnt*cnt;
 	for (int i=0;i<pl;i++)
 		p[i]=-1;
-	printkex("rand:");
+	//printkex("rand:");
 	for (int i=0;i<pl;i++)
 	{
 		int x=(Equilikely(0,pl-i)&0xff)%(pl-i)+1;
-		printkex("%x ",x);
+	//	printkex("%x ",x);
 		int j=-1;
 		while (x!=0 && j<pl)
 		{
@@ -39,7 +39,7 @@ void initperm()
 		}
 		p[j]=i;
 	}
-	printkex("\n");
+//	printkex("\n");
 }
 
 void draw(int i)
@@ -103,13 +103,11 @@ void draw_circle(int bx,int by)
 
 int main()
 {
-	//ioinit();
+//	ioinit();
 	output_ex("it's the start of Jerry's game, enjoy it\n");
-	while (1)
-	{
 		output_ex("gogo\n");
-	}
-/*	initperm();
+	init_display();
+	initperm();
 
 	printk_test_ex();	
 	printkex("init game pass\n");
@@ -117,16 +115,17 @@ int main()
 	for (int i=0;i<BLOCK*BLOCK;i++)
 		draw(i);
 //	draw_line();
-	int sx=0,sy=0;*/
-/*	for (int j=0;j<768;j++)
+	int sx=0,sy=0;
+/*	for (int j=0;j<768;j++) /////////////////useless
 	{
 		for (int i=0;i<1024;i++)
 		{		
 			point(i,j,*addr);
 			addr=(uint32_t*)(((char*)addr)+3);
-		}
+		}		//////////////////////////useless
 	}	*/
-/*	printkex("draw pass\n");
+	cp_image();
+	printkex("draw pass\n");
 	int state=1;
 	int dir[4][2]={{-1,0},{1,0},{0,-1},{0,1}};
 	while (1)
@@ -173,6 +172,6 @@ int main()
 			sy=ty;
 		}
 
-	}*/
+	}
 	return 0;
 }

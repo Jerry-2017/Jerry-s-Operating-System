@@ -1,6 +1,5 @@
 #include "include/device/int.h"
 #include "include/device/x86.h"
-#include "include/device/gdt.h"
 #include "include/common/printk.h"
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
@@ -11,7 +10,7 @@
 #define PIC_EOI		0x20
 
 #define MAX_INT 256
-#define JMP_CODE_LEN 0x30
+#define JMP_CODE_LEN 0x40
 #define SERVICE_BASE 0x10000
 uint32_t idt[MAX_INT][2];
 uint32_t intpro[MAX_INT];
@@ -89,12 +88,28 @@ void init_idt()
 										"\x60"	//pushad
 										"\x66\x8c\xd5"			//mov %ss,%bp
 										"\xb8\x08\x00\x00\x00" //mov $0x8,%eax
-										"\x8e\xd8"  //mov %ax, %ds
 										"\x8e\xd0" //mov %ax, %ss
+										"\x1e"		//push ds
+										"\x06"		//push es
+									
+										"\x0f\xa0"  //push fs
+										"\x0f\xa8"	//push gs
+										
+										"\x8e\xd8"  //mov %ax, %ds
+										
+										"\x8e\xc0"  // ax es
+										"\x8e\xe0"	// ax fs
+										"\x8e\xe8"	// ax gs
 										
 										"\xb8\x00\x00\x00\x00"
 										"\x9a\x00\x00\x00\x00\x10\x00" //lcall 0x10: addr ret far needed or pop first
-										"\x83\xc4\x04"
+										"\x83\xc4\x04" //get ridof seg
+
+										"\x0f\xa9"	//pop gs
+										"\x0f\xa1"	//pop fs
+
+										"\x07"		//pop es
+										"\x1f"		//pop ds
 										"\x8e\xd5" //mov %bp,%ss
 										"\x61"		//popad
 										"\xcf";							// iret
@@ -103,13 +118,13 @@ void init_idt()
 				*((uint16_t*)(asm_code))=0x9090;
 				*((uint8_t*)(asm_code+2))=0x90;
 			}
-			*((uint32_t*)(asm_code+17))=i;
+			*((uint32_t*)(asm_code+29))=i;
 			if (i>=0x20 && i<=0x20+15)
-				*((uint32_t*)(asm_code+22))=(uint32_t)rawservice;//intpro[i];
+				*((uint32_t*)(asm_code+34))=(uint32_t)rawservice;//intpro[i];
 			else if(i>=0x80)
-				 *((uint32_t*)(asm_code+22))=(uint32_t)rawsyscall;
+				 *((uint32_t*)(asm_code+34))=(uint32_t)rawsyscall;
 			else
-				 *((uint32_t*)(asm_code+22))=(uint32_t)rawexception;
+				 *((uint32_t*)(asm_code+34))=(uint32_t)rawexception;
 			fill((uint32_t)asm_code,saddr,JMP_CODE_LEN);
 		}
 	}
