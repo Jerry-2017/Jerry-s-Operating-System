@@ -4,7 +4,8 @@
 //#include "./include/device/gdt.h"
 //#include "string.h"
 #define LOADING_ENTRY 0x100000
-#define GAME_SECTORS 0x10
+#define KERNEL_SECTORS 0x10
+#define KERNEL_LEN (0x300-0x10)
 //void (*addr) (void);
 //void readsect(uint32_t lba,uint32_t count,uint32_t memaddr);
 
@@ -13,7 +14,7 @@ int main()
 	uint32_t dst;
 	dst=LOADING_ENTRY;
 //	readsect(GAME_SECTORS,0x20,dst);
-	readsects((void*)dst,GAME_SECTORS,0x2000);
+	readsects((void*)dst,KERNEL_SECTORS,KERNEL_LEN);
 	while (1)
 	{
 		uint32_t tp=load_elf(LOADING_ENTRY,0x0000000); //16mb

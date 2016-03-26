@@ -1,5 +1,6 @@
 #include "include/device/int.h"
 #include "include/device/x86.h"
+#include "include/device/gdt.h"
 #include "include/common/printk.h"
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
@@ -10,7 +11,7 @@
 #define PIC_EOI		0x20
 
 #define MAX_INT 256
-#define JMP_CODE_LEN 0x20
+#define JMP_CODE_LEN 0x30
 #define SERVICE_BASE 0x10000
 uint32_t idt[MAX_INT][2];
 uint32_t intpro[MAX_INT];
@@ -86,9 +87,15 @@ void init_idt()
 		{
 			char asm_code[JMP_CODE_LEN]="\x83\xc4\x04"				//add esp,0x4
 										"\x60"	//pushad
+										"\x66\x8c\xd5"			//mov %ss,%bp
+										"\xb8\x08\x00\x00\x00" //mov $0x8,%eax
+										"\x8e\xd8"  //mov %ax, %ds
+										"\x8e\xd0" //mov %ax, %ss
+										
 										"\xb8\x00\x00\x00\x00"
 										"\x9a\x00\x00\x00\x00\x10\x00" //lcall 0x10: addr ret far needed or pop first
 										"\x83\xc4\x04"
+										"\x8e\xd5" //mov %bp,%ss
 										"\x61"		//popad
 										"\xcf";							// iret
 			if (error[i]==0) 
@@ -96,13 +103,13 @@ void init_idt()
 				*((uint16_t*)(asm_code))=0x9090;
 				*((uint8_t*)(asm_code+2))=0x90;
 			}
-			*((uint32_t*)(asm_code+5))=i;
+			*((uint32_t*)(asm_code+17))=i;
 			if (i>=0x20 && i<=0x20+15)
-				*((uint32_t*)(asm_code+10))=(uint32_t)rawservice;//intpro[i];
+				*((uint32_t*)(asm_code+22))=(uint32_t)rawservice;//intpro[i];
 			else if(i>=0x80)
-				 *((uint32_t*)(asm_code+10))=(uint32_t)rawsyscall;
+				 *((uint32_t*)(asm_code+22))=(uint32_t)rawsyscall;
 			else
-				 *((uint32_t*)(asm_code+10))=(uint32_t)rawexception;
+				 *((uint32_t*)(asm_code+22))=(uint32_t)rawexception;
 			fill((uint32_t)asm_code,saddr,JMP_CODE_LEN);
 		}
 	}
@@ -154,9 +161,10 @@ void rawsyscall()
 	uint32_t intno,bx,cx,dx;
 
 	asm("":"=a"(intno),"=b"(bx),"=c"(cx),"=d"(dx):);
+//	LOAD_SEG(0x8);
 	if (intpro[intno]!=0)
 	{
-	//	printk("into raw_sys_call %x\n",intno);
+		//printk("into raw_sys_call %x\n",intno);
 		((void (*)(uint32_t,uint32_t,uint32_t,uint32_t))intpro[intno]) (intno,bx,cx,dx);
 	}
 }

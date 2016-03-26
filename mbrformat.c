@@ -2,11 +2,11 @@
 #include "string.h"
 
 #define maxn 512
-#define sectors 0x2000
-#define total (sectors)*maxn
+#define sectors 0x3000
+#define total ((sectors)*maxn)
 #define KERNEL_START 0x10
 char a[total];
-void readfile(char * fname,int offset,int type)
+void readfile(char * fname,unsigned int offset,int type)
 {
 	FILE* fi=fopen(fname,"rb");
 	int cnt=0;
@@ -20,6 +20,7 @@ void readfile(char * fname,int offset,int type)
 		a[cnt+offset+bias]=fgetc(fi);
 		cnt++;
 	}
+	printf("file : %s offset: 0x%x count:0x%x\n",fname,offset,cnt); 
 	fclose(fi);
 	return;
 }
@@ -28,7 +29,7 @@ void readfile(char * fname,int offset,int type)
 int main()
 {
 	FILE* fo=fopen("boot512b.img","wb");
-	int i;
+	unsigned int i;
 	for (i=0;i<total;i++)
 	{
 		a[i]=0x90;
@@ -37,8 +38,8 @@ int main()
 	readfile("elfloader.img",512,0);
 //	readfile("iofunc.img",512*5);
 	readfile("kernel.o",512*KERNEL_START,0);
-	readfile("game.o",0x100*512,0);
-	readfile("./res/pizza.raw",0x200*512,1);
+	readfile("game.o",0x300*512,0);
+	readfile("./res/pizza.raw",0x800*512,1);
 	a[510]=0x55;
 	a[511]=0xaa;
 //	resformat();

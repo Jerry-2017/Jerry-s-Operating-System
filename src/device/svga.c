@@ -1,5 +1,6 @@
 #include "include/device/x86.h"
 #include "include/common/printk.h"
+#include "include/device/gdt.h"
 #include "math.h"
 #define SVGA_ADDR 0x79f0 
 #pragma GCC push_options
@@ -25,21 +26,25 @@ void vbe_set(uint16_t xres, uint16_t yres, uint16_t bpp)
 }
 
 
-void cp_block(uint16_t height,uint16_t weight,uint16_t blocksize,uint32_t addr) 
+void cp_block(uint16_t height,uint16_t weight,uint16_t blocksize,uint32_t addr,uint16_t ds) 
 {
 	//printk("vgax :%x pitch:%x\n",vga_x,pitch);
 	uint32_t re_addr=PIXEL_SIZE(MAX_X*height+weight);
 	uint32_t pa=svga_addr+re_addr;
 	uint32_t ma=addr+re_addr;
-
+	
 	uint32_t xl=PIXEL_SIZE(blocksize);
 	int i,j;
+	uint32_t off=getbase(ds);
+	ma+=off;
+	//asm("mov %%ax,%%es":"=a"(ds)::);
 	//printk("cp_blcok used h:%x w:%x blksz:%x addr:%x\n",height,weight,blocksize,addr);
 	//printk("block %x %x, shift %x\n",bx,by,PIXEL_PHYADDR(bx,by,0));
 	for (i=0;i<blocksize;i++) 
 	{
 		for (j=0;j<xl;j++) 
 		{
+			//asm("movb %%es:(%%eax,%%ebx,1),(%%ecx,%%ebx,1)":"=a"(ma),"=b"(j),"=c"(pa)::);
 			*((uint8_t*)(pa+j))=*((uint8_t*)(ma+j));
 		}
 		pa+=PIXEL_SIZE(MAX_X);

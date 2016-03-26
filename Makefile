@@ -20,16 +20,16 @@ LD_SEG= -Ttext 0x0 -Tbss 0x100000 -Tdata 0x100000
 #-T linker.lds 
 
 SYS_MOD := ./src/sys/input.o ./src/sys/display.o ./src/sys/output.o ./src/common/printkex.o 
-DEVICE_MOD:= ./src/device/timer.o ./src/device/keyboard.o ./src/device/int.o ./src/device/com.o ./src/device/svga.o ./src/common/printk.o ./src/sys/syscall.o
+DEVICE_MOD:= ./src/device/timer.o ./src/device/keyboard.o ./src/device/int.o ./src/device/com.o ./src/device/svga.o ./src/common/printk.o ./src/sys/syscall.o ./src/device/gdt.o ./src/file/elf.o ./src/device/io.o
 COMMON_MOD:= ./src/common/mystring.o ./src/common/rvgs.o ./src/common/rngs.o
-GAME_OBJECT := ./game/game.o $(DEVICE_MOD) $(SYS_MOD) $(COMMON_MOD)
+GAME_OBJECT := ./game/game.o  $(SYS_MOD) $(COMMON_MOD)
 ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o ./src/device/gdt.o
 KERNEL_OBJECT := ./kernel/kernel.o $(DEVICE_MOD) $(COMMON_MOD)
 game.o : $(GAME_OBJECT)
-	ld -o game.o $(GAME_OBJECT) --entry main -lm
+	ld -o game.o $(GAME_OBJECT) --entry main -lm --script=linker.lds
 	objdump -D -m i386 game.o > game.s
 kernel.o : $(KERNEL_OBJECT)
-	ld -o kernel.o $(KERNEL_OBJECT) --entry main -lm --script=linker.lds
+	ld -o kernel.o $(KERNEL_OBJECT) --entry main -lm --script=kerlkr.lds
 	objdump -D -m i386 kernel.o > kernel.s
 
 #&& ld -o game.o gamet.o ./
@@ -42,7 +42,7 @@ elfloader.s: elfloader.o
 	ld -o elfloadertp.o -Ttext 0x8000 -m elf_i386 -nostdlib -e main $(ELFLOADER_OBJECT)  && \
 	objcopy --strip-all --only-section=.text -S -O binary elfloadertp.o elfloader.img && \
 	objdump -D -b binary -m i386 elfloader.img > elfloader.s
-mbrformat.o:
+mbrformat.o: mbrformat.c
 	gcc -o mbrformat.o mbrformat.c
 boot.img : boot.asm
 	nasm -f bin -o boot.img boot.asm &&  objdump -D -b binary -m i8086 boot.img >boot.s
@@ -72,7 +72,7 @@ debug:
 	$(QEMU) $(QEMU_DEBUG_OPTIONS) $(QEMU_OPTIONS) boot512b.img
 
 QEMU_OPTIONS := -serial stdio #以标准输入输为串�?COM1)
-QEMU_OPTIONS += -m 256 -d int
+QEMU_OPTIONS += -m 256 #-d int
 #QEMU_OPTIONS += -d int #输出中断信息
 QEMU_OPTIONS += -monitor telnet:127.0.0.1:1111,server,nowait #telnet monitor
 QEMU_OPTIONS += -vga std 

@@ -1,15 +1,15 @@
-#include "include/device/int.h"
-#include "include/device/com.h"
+//#include "include/device/int.h"
+//#include "include/device/com.h"
 #include "include/common/common.h"
 #include "include/common/printkex.h"
 #include "include/sys/display.h"
-#include "include/device/svga.h"
+//#include "include/device/svga.h"
 #include "include/common/rvgs.h"
-#include "include/device/timer.h"
-#include "include/device/keyboard.h"
+//#include "include/device/timer.h"
+//#include "include/device/keyboard.h"
 #include "include/sys/input.h"
 #include "include/sys/output.h"
-#include "include/sys/syscall.h"
+//#include "include/sys/syscall.h"
 
 #define VGAX 1024
 #define VGAY 768
@@ -18,7 +18,7 @@
 #define REAL_ADDR3(x,y,c) (point((x),(y),(c)))
 #define MARK_ADDR4(bx,by,x,y) REAL_ADDR2((bx)*(VGAX/BLOCK)+(x),(by)*(VGAY/BLOCK)+(y))
 #define MARK_ADDR5(bx,by,x,y,c) REAL_ADDR3((bx)*(VGAX/BLOCK)+(x),(by)*(VGAY/BLOCK)+(y),c)
-uint32_t addr=(0x100000+(0x100-0x10)*512);
+uint32_t addr=0x500000;//(0x100000+(0x100-0x10)*512);
 int p[BLOCK*BLOCK];
 void initperm()
 {
@@ -77,7 +77,7 @@ void draw_line()
 	}
 }
 
-void ioinit()
+/*void ioinit()
 {
 	ioinit8259();
 	timer_init();
@@ -86,7 +86,7 @@ void ioinit()
 	syscall_init();
 	init_idt();
 	//printk("init io pass\n");
-}
+}*/
 
 void draw_circle(int bx,int by)
 {
@@ -103,9 +103,13 @@ void draw_circle(int bx,int by)
 
 int main()
 {
-	ioinit();
+	//ioinit();
 	output_ex("it's the start of Jerry's game, enjoy it\n");
-	initperm();
+	while (1)
+	{
+		output_ex("gogo\n");
+	}
+/*	initperm();
 
 	printk_test_ex();	
 	printkex("init game pass\n");
@@ -113,7 +117,7 @@ int main()
 	for (int i=0;i<BLOCK*BLOCK;i++)
 		draw(i);
 //	draw_line();
-	int sx=0,sy=0;
+	int sx=0,sy=0;*/
 /*	for (int j=0;j<768;j++)
 	{
 		for (int i=0;i<1024;i++)
@@ -122,7 +126,7 @@ int main()
 			addr=(uint32_t*)(((char*)addr)+3);
 		}
 	}	*/
-	printkex("draw pass\n");
+/*	printkex("draw pass\n");
 	int state=1;
 	int dir[4][2]={{-1,0},{1,0},{0,-1},{0,1}};
 	while (1)
@@ -169,6 +173,6 @@ int main()
 			sy=ty;
 		}
 
-	}
+	}*/
 	return 0;
 }

@@ -69,7 +69,9 @@ void cp_block_ex(uint32_t bx,uint32_t by)
 	bx*=BLOCK_SIZE;
 	uint32_t ecx=(by<<16)|(bx&0xffff);
 	uint32_t ebx=(uint32_t)vga_buffer;
-	uint32_t edx=BLOCK_SIZE<<16;
+	uint32_t edx;
+	asm("mov %%ds,%%edx":"=d"(edx)::);
+	edx=((BLOCK_SIZE<<16)&0xffff)|(edx&0xffff);
 	//printk("into cp_block_ex\n");
 	asm("int $0x81"::"c"(ecx),"b"(ebx),"d"(edx):);
 }
