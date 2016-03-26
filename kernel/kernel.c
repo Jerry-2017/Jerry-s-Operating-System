@@ -9,6 +9,7 @@
 #include "include/device/io.h"
 #include "include/device/gdt.h"
 #include "include/sys/syscall.h"
+#include "include/device/tss.h"
 
 #define GAME_SECTORS 0x300
 #define GAME_LEN 0x500
@@ -33,6 +34,7 @@ void loadprog()
 	uint32_t tp=load_elf(PROGRAM_START,0x2000000);
 	setgdt(0x28,0x0,0x2000000,0xffffff);
 	setgdt(0x30,0x1,0x2000000,0xffffff);
+	init_tss();
 	asm __volatile__("mov %0,%%edx"::"r"(tp):);
 	LOAD_SEG(0x28);
 	asm __volatile__("push %%bx\n\tpush %%edx\n\tlret"::"b"(0x30):);
