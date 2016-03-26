@@ -11,7 +11,7 @@ SEARCH_DIR("=/usr/i686-linux-gnu/lib32"); SEARCH_DIR("=/usr/local/lib32"); SEARC
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */
-  PROVIDE (__executable_start = SEGMENT_START("text-segment", 0x00)); . = SEGMENT_START("text-segment", 0x00) + SIZEOF_HEADERS;
+  PROVIDE (__executable_start = SEGMENT_START("text-segment", 0x1000000)); . = SEGMENT_START("text-segment", 0x1000000) + SIZEOF_HEADERS;
   .interp         : { *(.interp) }
   .note.gnu.build-id : { *(.note.gnu.build-id) }
   .hash           : { *(.hash) }

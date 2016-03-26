@@ -37,7 +37,8 @@ int main()
 	readfile("elfloader.img",512,0);
 //	readfile("iofunc.img",512*5);
 	readfile("kernel.o",512*KERNEL_START,0);
-	readfile("./res/pizza.raw",0x100*512,1);
+	readfile("game.o",0x100*512,0);
+	readfile("./res/pizza.raw",0x200*512,1);
 	a[510]=0x55;
 	a[511]=0xaa;
 //	resformat();

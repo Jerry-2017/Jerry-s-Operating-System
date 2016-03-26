@@ -8,10 +8,10 @@
 
 void ioinit()
 {
-//	ioinit8259();
-//	timer_init();
-//	keyboard_init();
-//	init_idt();
+	ioinit8259();
+	timer_init();
+	keyboard_init();
+	init_idt();
 	printk("init io pass\n");
 }
 
