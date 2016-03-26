@@ -143,7 +143,10 @@ void idt_setting()
 	for (i=0;i<MAX_INT;i++)
 	{
 		tp=(void*)idt[i]; //timer int
-		int_set(tp,SERVICE_BASE+JMP_CODE_LEN*i,0x10,0x0);
+		if (i>=0x80)
+			 int_set(tp,SERVICE_BASE+JMP_CODE_LEN*i,0x10,0x3);
+		else
+			int_set(tp,SERVICE_BASE+JMP_CODE_LEN*i,0x10,0x0);
 	}
 }
 
@@ -179,7 +182,7 @@ void rawsyscall()
 //	LOAD_SEG(0x8);
 	if (intpro[intno]!=0)
 	{
-		//printk("into raw_sys_call %x\n",intno);
+		printk("into raw_sys_call %x\n",intno);
 		((void (*)(uint32_t,uint32_t,uint32_t,uint32_t))intpro[intno]) (intno,bx,cx,dx);
 	}
 }
