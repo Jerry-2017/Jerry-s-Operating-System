@@ -6,15 +6,17 @@
 #define PORT_CMD 0x43
 #define PIT_FREQUENCE 1193182
 #define HZ 100
-
+unsigned int tm_cnt=0;
 bool test_serv=1;
 void timer_serv()
 {
 	if (test_serv)
 	{
 		printk("timer int recv\n");
+		tm_cnt=0;
 		test_serv=0;
 	}
+	tm_cnt++;
 }
 
 union CmdByte {
