@@ -3,9 +3,8 @@
 #include "include/device/gdt.h"
 #include "include/common/printk.h"
 
-#define MAX_PROC_NUM 0x10
-static pcb proc[MAX_PROC_NUM];
-static uint32_t cpcb_i;
+pcb proc[MAX_PROC_NUM];
+uint32_t cpcb_i;
 
 void init_pcb()
 {
@@ -46,3 +45,5 @@ void start_pcb(uint32_t no)
 	LOAD_SEG(s);
 	asm __volatile__("mov %edx,%esp\n\tiret");
 }
+
+//void save_pcb();

@@ -7,6 +7,7 @@
 #include "include/common/rvgs.h"
 //#include "include/device/timer.h"
 //#include "include/device/keyboard.h"
+#include "include/sys/process.h"
 #include "include/sys/input.h"
 #include "include/sys/output.h"
 //#include "include/sys/syscall.h"
@@ -20,6 +21,7 @@
 #define MARK_ADDR5(bx,by,x,y,c) REAL_ADDR3((bx)*(VGAX/BLOCK)+(x),(by)*(VGAY/BLOCK)+(y),c)
 uint32_t addr=0x1000000;//(0x100000+(0x100-0x10)*512);
 int p[BLOCK*BLOCK];
+
 void initperm()
 {
 	int cnt=BLOCK;

@@ -11,6 +11,8 @@
 #include "include/sys/syscall.h"
 #include "include/device/tss.h"
 #include "include/process/pcb.h"
+#include "include/process/monitor.h"
+#include "include/process/schedule.h"
 
 #define GAME_SECTORS 0x300
 #define GAME_LEN 0x500
@@ -28,9 +30,15 @@ void ioinit()
 	printk("init io pass\n");
 }
 
+void procinit()
+{
+	init_monitor();
+	schedule_init();
+	init_pcb();
+}
+
 void loadprog()
 {
-	init_pcb();
 	readsects((void*)PROGRAM_START,GAME_SECTORS,GAME_LEN);
 	readsects((void*)(0x3000000),PIC_START,PIC_LEN);
 	uint32_t tp=load_elf(PROGRAM_START,0x2000000);
@@ -49,6 +57,7 @@ void loadprog()
 int main()
 {
 	ioinit();
+	procinit();
 	printk("kernel\n");
 	while (1)
 	{

@@ -1,13 +1,37 @@
 #include "include/common/common.h"
 #include "include/common/printk.h"
+#include "include/common/common.h"
 #include "include/device/int.h"
 #include "include/device/x86.h"
 #define PORT_CH_0 0x40
 #define PORT_CMD 0x43
 #define PIT_FREQUENCE 1193182
 #define HZ 100
+
+#define MAX_WAKEUP 100
 unsigned int tm_cnt=0;
 bool test_serv=1;
+
+static void (*wakeupstack [MAX_WAKEUP])(uint32_t);
+static int wakeupl=0;
+uint32_t wakeupreg(void (*func)(uint32_t))
+{
+	if (wakeupl>=MAX_WAKEUP)
+	{
+		printk("Error in src.sys.timer.c, Wakeup Overstack\n");
+		return false;
+	}
+	wakeupstack[wakeupl++]=(void*)func;
+	return true;
+}
+
+void wakeup()
+{
+	int i;
+	for (i=0;i<wakeupl;i++)
+		(*wakeupstack[i])(tm_cnt);
+}
+
 void timer_serv()
 {
 	if (test_serv)
@@ -16,6 +40,7 @@ void timer_serv()
 		tm_cnt=0;
 		test_serv=0;
 	}
+	wakeup();
 	tm_cnt++;
 }
 

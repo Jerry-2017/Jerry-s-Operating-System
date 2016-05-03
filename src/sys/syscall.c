@@ -28,8 +28,9 @@ void syscall_main(uint32_t intno, uint32_t choice, uint32_t ecx, uint32_t edx)
 			output((char*)(off+ecx));
 			break;
 		}
-		case 3:		//write the com port string dl:ebx
+		case 3:		//sleep ecx ms
 		{
+			printk("sleep call %dms\n",ecx);
 		}
 	}
 }

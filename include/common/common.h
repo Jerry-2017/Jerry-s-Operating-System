@@ -1,7 +1,10 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 #define MAX_STRING 256
+#define true 1
+#define false 0
 typedef char bool;
+
 
 typedef long  s32;
 typedef signed short s16;

@@ -2,6 +2,7 @@
 #ifndef __PCB_H__
 #define __PCB_H__
 #define MAX_STACK 1024
+#define MAX_PROC_NUM 0x10
 struct ProgramControlBlock{
 	uint8_t stack[MAX_STACK];
 	uint8_t* ptr;
@@ -13,4 +14,6 @@ typedef struct ProgramControlBlock pcb;
 void init_pcb();
 int new_pcb(uint16_t,uint16_t,uint32_t);
 void start_pcb(uint32_t);
+pcb proc[MAX_PROC_NUM];
+uint32_t cpcb_i;
 #endif

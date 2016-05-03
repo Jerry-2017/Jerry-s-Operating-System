@@ -19,17 +19,18 @@ elftest.o : ./game/elft.c start
 LD_SEG= -Ttext 0x0 -Tbss 0x100000 -Tdata 0x100000
 #-T linker.lds 
 
-SYS_MOD := ./src/sys/input.o ./src/sys/display.o ./src/sys/output.o ./src/common/printkex.o 
-KERNEL_MOD := ./src/sys/syscall.o ./src/process/pcb.o
+SYS_MOD := ./src/sys/input.o ./src/sys/display.o ./src/sys/output.o ./src/common/printkex.o ./src/sys/process.o 
+KERNEL_MOD := ./src/sys/syscall.o
 DEVICE_MOD:= ./src/device/timer.o ./src/device/keyboard.o ./src/device/int.o ./src/device/com.o ./src/device/svga.o ./src/common/printk.o ./src/device/gdt.o ./src/file/elf.o ./src/device/io.o ./src/device/tss.o
+PROCESS_MOD:= ./src/process/pcb.o ./src/process/monitor.o ./src/process/schedule.o
 COMMON_MOD:= ./src/common/mystring.o ./src/common/rvgs.o ./src/common/rngs.o
 GAME_OBJECT := ./game/game.o  $(SYS_MOD) $(COMMON_MOD)
 ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o ./src/device/gdt.o
-KERNEL_OBJECT := ./kernel/kernel.o $(DEVICE_MOD) $(KERNEL_MOD) $(COMMON_MOD)
-game.o : $(GAME_OBJECT)
+KERNEL_OBJECT := ./kernel/kernel.o $(DEVICE_MOD) $(KERNEL_MOD) $(PROCESS_MOD) $(COMMON_MOD)
+game.o : $(GAME_OBJECT) ./game/game.c
 	ld -o game.o $(GAME_OBJECT) --entry main -lm --script=linker.lds
 	objdump -D -m i386 game.o > game.s
-kernel.o : $(KERNEL_OBJECT)
+kernel.o : $(KERNEL_OBJECT) ./kernel/kernel.c
 	ld -o kernel.o $(KERNEL_OBJECT) --entry main -lm --script=kerlkr.lds
 	objdump -D -m i386 kernel.o > kernel.s
 
