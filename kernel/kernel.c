@@ -19,6 +19,8 @@
 #define PIC_LEN 0x2000
 #define PIC_START 0x800
 #define PROGRAM_START 0x1800000
+
+//static int now_pcb=0;
 void ioinit()
 {
 	ioinit8259();

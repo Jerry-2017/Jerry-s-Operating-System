@@ -11,9 +11,11 @@ struct ProgramControlBlock{
 	uint16_t codeseg;
 };
 typedef struct ProgramControlBlock pcb;
+void sleep(uint32_t);
 void init_pcb();
 int new_pcb(uint16_t,uint16_t,uint32_t);
 void start_pcb(uint32_t);
+void change_pcb();
 pcb proc[MAX_PROC_NUM];
 uint32_t cpcb_i;
 #endif

@@ -34,4 +34,5 @@ struct tss_entry_struct
 } __packed;
  
 typedef struct tss_entry_struct tss_entry_t;
+tss_entry_t tss;
 #endif

@@ -14,7 +14,8 @@ int main()
 	printkex("init game pass\n");
 	while (1)
 	{
-		//sleep(500);
+		sleep(1000);
+		printkex("i'm alive\n");
 	}
 	return 0;
 }

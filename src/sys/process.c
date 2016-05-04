@@ -2,7 +2,7 @@
 
 void exit()
 {
-	asm("mov $0x3,%%ebx\n\tmov %%ds, %%dx\n\tint $0x80":::"%ebx");
+	asm("mov $0x3,%%ebx\n\tint $0x80":::);
 	return;
 }
 

@@ -6,6 +6,7 @@
 #include "include/sys/syscall.h"
 #include "include/device/com.h"
 #include "include/device/gdt.h"
+#include "include/process/pcb.h"
 
 void syscall_main(uint32_t intno, uint32_t choice, uint32_t ecx, uint32_t edx)
 {
@@ -24,13 +25,14 @@ void syscall_main(uint32_t intno, uint32_t choice, uint32_t ecx, uint32_t edx)
 		case 2:		// output string through com ecx addr of string
 		{
 			uint32_t off=getbase(edx);
-			//printk("off :%x no: %x\n",off,edx);
+			//printk("edx: %x off :%x no: %x\n",edx,off,edx);
 			output((char*)(off+ecx));
 			break;
 		}
-		case 3:		//sleep ecx ms
+		case 4:		//sleep ecx ms
 		{
 			printk("sleep call %dms\n",ecx);
+			sleep(ecx);
 		}
 	}
 }

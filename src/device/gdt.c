@@ -23,6 +23,7 @@ void setgdt(uint32_t no,uint32_t type,uint32_t base,uint32_t limit)
 
 uint32_t getbase(uint32_t no)
 {
+     no=no&0xffff;
 	 uint8_t* ps=(void*)(GDT_ENTRY+((no>>3)<<3));
 	 uint32_t base=(((uint32_t)(*(ps+7)))<<24)|(*((uint16_t*)(ps+2)));
 	 return base;

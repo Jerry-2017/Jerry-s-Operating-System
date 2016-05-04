@@ -9,7 +9,7 @@ start:
 	$(MAKE) -C ./game
 	$(MAKE) -C ./tool
 	$(MAKE) -C ./kernel
-
+	$(MAKE) -C ./idle
 elftest.o : ./game/elft.c start 
 	gcc -o elftest.o ./game/elft.c -I $(ROOT_DIR)
 	echo "starting kernel"
@@ -25,10 +25,14 @@ DEVICE_MOD:= ./src/device/timer.o ./src/device/keyboard.o ./src/device/int.o ./s
 PROCESS_MOD:= ./src/process/pcb.o ./src/process/monitor.o ./src/process/schedule.o
 COMMON_MOD:= ./src/common/mystring.o ./src/common/rvgs.o ./src/common/rngs.o
 GAME_OBJECT := ./game/game.o  $(SYS_MOD) $(COMMON_MOD)
+IDLE_OBJECT := ./idle/idle.o $(SYS_MOD) $(COMMON_MOD)
 ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o ./src/device/gdt.o
 KERNEL_OBJECT := ./kernel/kernel.o $(DEVICE_MOD) $(KERNEL_MOD) $(PROCESS_MOD) $(COMMON_MOD)
 game.o : $(GAME_OBJECT) ./game/game.c
 	ld -o game.o $(GAME_OBJECT) --entry main -lm --script=linker.lds
+	objdump -D -m i386 game.o > game.s
+idle.o : $(GAME_OBJECT) ./idle/idle.c
+	ld -o idle.o $(GAME_OBJECT) --entry main -lm --script=linker.lds
 	objdump -D -m i386 game.o > game.s
 kernel.o : $(KERNEL_OBJECT) ./kernel/kernel.c
 	ld -o kernel.o $(KERNEL_OBJECT) --entry main -lm --script=kerlkr.lds

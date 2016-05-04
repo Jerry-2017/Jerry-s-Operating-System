@@ -1,6 +1,9 @@
 #include "include/process/pcb.h"
 #include "include/device/timer.h"
-
+#include "include/common/printk.h"
+#include "include/common/common.h"
+bool monitor_flag=false;
+static int tp_slot=0;
 static int free[MAX_PROC_NUM+2][2]; //0 prev 1 next
 static int used[MAX_PROC_NUM+2][2]; //0 prev 1 next
 static int status[MAX_PROC_NUM+2]; //0 running 1 sleeping 2 dead 3 waiting 4 free 5 sys
@@ -41,11 +44,12 @@ uint32_t allocate_slot()
 		used[un][0]=n;
 		used[n][1]=un;
 	}
-	return n;
+	return n-1;
 }
 
 void release_slot(uint32_t slot)
-{
+{	
+	slot+=1;
 	if (slot>0 && slot<MAX_PROC_NUM+1)
 	{
 		status[slot]=4;
@@ -70,21 +74,41 @@ void sch_sleep(uint32_t slot,uint32_t ms)
 	}
 }
 
+void start_process(uint32_t slot)
+{
+	status[slot]=0;
+}
+
 uint32_t change_process(uint32_t slot)
 {
-	status[slot]=3;
-	slot=used[slot][1];
-	while (true)
+//	uint32_t tp1=0,tp2=0;
+	tp_slot=slot;
+	monitor_flag=true;
+	asm("sti":::);
+	while (monitor_flag);
+	return tp_slot;
+}
+
+void monitor_call()
+{
+	int slot=used[tp_slot][1];
+	if (status[slot]==3) 
+		return;
+	if (status[slot]==1)
 	{
-		if (status[slot]==3) 
-			break;
-		if (status[slot]==1)
+/*			if (tp1!=sleepcnt[slot] || tp2!=tm_cnt)
+				printk("%d %d\n",sleepcnt[slot],tm_cnt);
+			tp1=sleepcnt[slot];
+			tp2=tm_cnt;*/
+		printk("tm_cnt\n");
+		if (sleepcnt[slot]<tm_cnt)
 		{
+			printk("sleep out\n");
+			monitor_flag=false;
 			status[slot]=0;
-			break;
+			return;	
 		}
-		slot=used[slot][1];
-		if (slot==-1) slot=0;
 	}
-	return slot;
+	if (slot==-1) slot=0;
+	tp_slot=slot;	
 }

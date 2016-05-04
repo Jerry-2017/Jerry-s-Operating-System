@@ -40,6 +40,7 @@ void timer_serv()
 		tm_cnt=0;
 		test_serv=0;
 	}
+	//printk("timer ++\n");
 	wakeup();
 	tm_cnt++;
 }
