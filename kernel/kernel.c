@@ -41,13 +41,18 @@ void procinit()
 
 void loadprog()
 {
+//08 sys data 10 sys code
 	readsects((void*)PROGRAM_START,GAME_SECTORS,GAME_LEN);
-	readsects((void*)(0x3000000),PIC_START,PIC_LEN);
-	uint32_t tp=load_elf(PROGRAM_START,0x2000000);
-	setgdt(0x28,0x2,0x2000000,0xffffff);
-	setgdt(0x30,0x3,0x2000000,0xffffff);
+	//readsects((void*)(0x3000000),PIC_START,PIC_LEN);
+	int no=get_pcb();
+	uint32_t addr=pcb_paddr(no);
+	printk("load process into addr %x slot %x\n",addr,no);
+	uint32_t tp=load_elf(PROGRAM_START,addr);
+//	setgdt(0x28,0x2,0x2000000,0xffffff);
+//	setgdt(0x30,0x3,0x2000000,0xffffff);
 	init_tss();
-	int no=new_pcb(0x28+0x3,0x30+0x3,tp);
+	set_pcb_ex(no,tp);
+	printk("program slot %d\n",no);
 /*
 	asm __volatile__("mov %0,%%edx"::"r"(tp):);
 	LOAD_SEG(0x28+0x3);

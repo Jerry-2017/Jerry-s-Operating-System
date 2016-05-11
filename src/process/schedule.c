@@ -2,8 +2,11 @@
 #include "include/device/timer.h"
 #include "include/common/printk.h"
 #include "include/common/common.h"
-bool monitor_flag=false;
+#include "include/common/printkex.h"
+#include "include/sys/output.h"
+uint32_t idle_no;
 static int tp_slot=0;
+
 static int free[MAX_PROC_NUM+2][2]; //0 prev 1 next
 static int used[MAX_PROC_NUM+2][2]; //0 prev 1 next
 static int status[MAX_PROC_NUM+2]; //0 running 1 sleeping 2 dead 3 waiting 4 free 5 sys
@@ -26,11 +29,16 @@ void schedule_init()
 	{
 		free[i][0]=i-1;
 	}
+	used[0][1]=MAX_PROC_NUM+1;
+	used[0][0]=-1;
+	used[MAX_PROC_NUM+1][0]=0;
+	used[MAX_PROC_NUM+1][1]=-1;
 	return;
 }
 uint32_t allocate_slot()
 {
 	int n=free[0][1];
+//	printk("allocate %d slot\n",n);
 	int nn=free[n][1];
 	int un=used[0][1];
 	if (nn<0) return -1;
@@ -44,12 +52,27 @@ uint32_t allocate_slot()
 		used[un][0]=n;
 		used[n][1]=un;
 	}
-	return n-1;
+	return n;
+}
+
+void idle ()
+{
+	int i=0,j;
+	while (1)
+	{
+		i=0;
+		j=0;
+		for (;j<100;j++)
+			for (i=0;i<10000000;i++);
+//		printkex("I'm in idle\n");
+		//output_ex("idle gogo\n");
+		asm ("push %%ebx\n\tmov $0x5,%%ebx\n\tint $0x80\n\tpop %%ebx\n\tnop\n\tnop\n\tnop":::);
+		output_ex("idle gogo\n");
+	}
 }
 
 void release_slot(uint32_t slot)
 {	
-	slot+=1;
 	if (slot>0 && slot<MAX_PROC_NUM+1)
 	{
 		status[slot]=4;
@@ -67,48 +90,40 @@ void release_slot(uint32_t slot)
 
 void sch_sleep(uint32_t slot,uint32_t ms)
 {
-	if (ms<10000 && status[slot]==0)
+	if (ms<10000)
 	{
 		status[slot]=1;
 		sleepcnt[slot]=tm_cnt+ms;
+		printk("sleep set slot:%d time:%d\n",slot,ms);
 	}
 }
 
-void start_process(uint32_t slot)
+void set_status(uint32_t slot,uint32_t type)
 {
-	status[slot]=0;
+	status[slot]=type;
 }
 
 uint32_t change_process(uint32_t slot)
 {
 //	uint32_t tp1=0,tp2=0;
 	tp_slot=slot;
-	monitor_flag=true;
-	asm("sti":::);
-	while (monitor_flag);
-	return tp_slot;
-}
-
-void monitor_call()
-{
-	int slot=used[tp_slot][1];
-	if (status[slot]==3) 
-		return;
-	if (status[slot]==1)
+	int pslot=slot;
+	while (true)
 	{
-/*			if (tp1!=sleepcnt[slot] || tp2!=tm_cnt)
-				printk("%d %d\n",sleepcnt[slot],tm_cnt);
-			tp1=sleepcnt[slot];
-			tp2=tm_cnt;*/
-		printk("tm_cnt\n");
-		if (sleepcnt[slot]<tm_cnt)
+		slot=used[slot][1];
+		if (slot==-1) slot=0;
+	//	printk("monitor %d\n",slot);
+		if ((status[slot]==1 && (sleepcnt[slot]<tm_cnt)) || status[slot]==3)
 		{
 			printk("sleep out\n");
-			monitor_flag=false;
+	//		monitor_flag=false;
+			tp_slot=slot;
 			status[slot]=0;
-			return;	
+			return tp_slot;	
+		}
+		if (slot==pslot)
+		{
+			return idle_no;
 		}
 	}
-	if (slot==-1) slot=0;
-	tp_slot=slot;	
 }

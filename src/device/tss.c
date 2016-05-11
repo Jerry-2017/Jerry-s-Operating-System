@@ -12,7 +12,7 @@ void init_tss()
 	tss.ss0=0x8;
 	tss.ss = tss.ds = tss.es = tss.fs = tss.gs = 0x8+0x3;
 	tss.cs=0x13;
-	tss.esp0=0xffffff;
+	tss.esp0=0x1ffffff;
 	setgdt(0x38,0x4,(uint32_t)&tss,sizeof(tss));
 	asm("mov $0x38,%%ax\n\tltr %%ax":::);
 }

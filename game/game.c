@@ -5,6 +5,7 @@
 #include "include/sys/input.h"
 #include "include/sys/output.h"
 #include "include/sys/process.h"
+#include "include/process/pcb.h"
 
 int main()
 {
@@ -12,10 +13,25 @@ int main()
 	output_ex("it's the start of Jerry's game, enjoy it\n");
 	output_ex("gogo\n");
 	printkex("init game pass\n");
+	int i1,i2=0;
+	int i=forkex();
 	while (1)
 	{
-		sleep(1000);
-		printkex("i'm alive\n");
+		lock(&i1);
+		if (i==1)
+		{
+			lock(&i2);
+			printkex("poduct\n");
+			unlock(&i2);
+		}
+		else
+		{
+			lock(&i2);
+			printkex("consumer\n");
+			unlock(&i2);
+		}
+		unlock(&i1);
+		unlock(&i);
 	}
 	return 0;
 }

@@ -5,4 +5,7 @@
 void exit();
 void sleep(uint32_t time);//time
 uint32_t fork();
+uint32_t forkex();
+void lock(int*);
+void unlock(int*);
 #endif

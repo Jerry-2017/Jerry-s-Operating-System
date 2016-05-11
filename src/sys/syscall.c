@@ -33,6 +33,13 @@ void syscall_main(uint32_t intno, uint32_t choice, uint32_t ecx, uint32_t edx)
 		{
 			printk("sleep call %dms\n",ecx);
 			sleep(ecx);
+			break;
+		}
+		case 5:   
+		{		//refresh
+			printk("into 0x80 5func:\n");
+			change_pcb();
+			break;
 		}
 	}
 }

@@ -6,8 +6,8 @@
 void kernel_wakeup(uint32_t time)
 {
 //	printk("wake up time %x ms\n",time);
-	if (monitor_flag)
-		monitor_call();
+//	if (monitor_flag)
+		//monitor_call();
 	return;
 }
 	

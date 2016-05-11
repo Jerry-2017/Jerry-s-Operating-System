@@ -8,6 +8,7 @@ start_addr		length			end_addr		effect_size		usage
 0x100000 		0x20000			0x120000		43712			kernel.o
 0x120000		0x3e0000		0x500000						its resource
 0x1000000		0x20000			0x1020000
+0x17ffff idle stack
 |
 |
 user program

@@ -27,7 +27,7 @@ COMMON_MOD:= ./src/common/mystring.o ./src/common/rvgs.o ./src/common/rngs.o
 GAME_OBJECT := ./game/game.o  $(SYS_MOD) $(COMMON_MOD)
 IDLE_OBJECT := ./idle/idle.o $(SYS_MOD) $(COMMON_MOD)
 ELFLOADER_OBJECT := ./elfloader.o ./src/device/io.o ./src/file/elf.o ./src/device/gdt.o
-KERNEL_OBJECT := ./kernel/kernel.o $(DEVICE_MOD) $(KERNEL_MOD) $(PROCESS_MOD) $(COMMON_MOD)
+KERNEL_OBJECT := ./kernel/kernel.o $(DEVICE_MOD) $(KERNEL_MOD) $(PROCESS_MOD) $(COMMON_MOD) ./src/common/printkex.o ./src/sys/output.o
 game.o : $(GAME_OBJECT) ./game/game.c
 	ld -o game.o $(GAME_OBJECT) --entry main -lm --script=linker.lds
 	objdump -D -m i386 game.o > game.s
