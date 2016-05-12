@@ -1,0 +1,12 @@
+# compile
+*.[oa]
+*.img
+*.d
+
+# temp
+*~
+
+# self
+# .gitignore
+kernel.s
+boot.s
