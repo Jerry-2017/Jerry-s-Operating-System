@@ -41,7 +41,7 @@ kernel.o : $(KERNEL_OBJECT) ./kernel/kernel.c
 #&& ld -o game.o gamet.o ./
 
 run: boot512b.img
-	$(QEMU) $(QEMU_OPTIONS) boot512b.img
+	$(QEMU) -nographic $(QEMU_OPTIONS) boot512b.img
 elfloader.o: elfloader.c
 	gcc elfloader.c -o elfloader.o -fno-builtin -std=gnu11 -m32 -c -I $(ROOT_DIR)
 elfloader.s: elfloader.o 
@@ -75,7 +75,7 @@ gdb:
 	$(GDB) $(GDB_OPTIONS)
 
 debug: 
-	$(QEMU) $(QEMU_DEBUG_OPTIONS) $(QEMU_OPTIONS) boot512b.img
+	$(QEMU) -nographic $(QEMU_DEBUG_OPTIONS) $(QEMU_OPTIONS) boot512b.img
 
 QEMU_OPTIONS := -serial stdio #以标准输入输为串�?COM1)
 QEMU_OPTIONS += -m 256 #-d int

@@ -88,9 +88,9 @@ void change_pcb()
 {
 	 save_pcb();
 	 printk("old pcb is %d ",cpcb_i);
-	 int i=cpcb_i;
+	 //int i=cpcb_i;
 	 cpcb_i=change_process(cpcb_i);
-	 if (i==cpcb_i) return;
+	// if (i==cpcb_i) return;
 	 printk("new pcb is %d",cpcb_i);
 //	 set_status(cpcb_i,0);
 	 start_pcb(cpcb_i);

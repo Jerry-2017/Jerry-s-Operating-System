@@ -13,11 +13,11 @@ int main()
 	output_ex("it's the start of Jerry's game, enjoy it\n");
 	output_ex("gogo\n");
 	printkex("init game pass\n");
-	int i1,i2=0;
-	int i=forkex();
+//	int i1,i2=0;
+//	int i=forkex();
 	while (1)
 	{
-		lock(&i1);
+/*		lock(&i1);
 		if (i==1)
 		{
 			lock(&i2);
@@ -31,7 +31,9 @@ int main()
 			unlock(&i2);
 		}
 		unlock(&i1);
-		unlock(&i);
+		unlock(&i);*/
+		sleep(100);
+		printkex("i'm alive\n");
 	}
 	return 0;
 }
