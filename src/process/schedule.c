@@ -4,12 +4,15 @@
 #include "include/common/common.h"
 #include "include/common/printkex.h"
 #include "include/sys/output.h"
+#include "include/process/semaphore.h"
+
 uint32_t idle_no;
 static int tp_slot=0;
 
 static int free[MAX_PROC_NUM+2][2]; //0 prev 1 next
 static int used[MAX_PROC_NUM+2][2]; //0 prev 1 next
-static int status[MAX_PROC_NUM+2]; //0 running 1 sleeping 2 dead 3 waiting 4 free 5 sys
+static int status[MAX_PROC_NUM+2]; //0 running 1 sleeping 2 dead 3 waiting 4 free 5 sys 6 waiting on p
+static int waitsid[MAX_PROC_NUM+2];
 static uint32_t sleepcnt[MAX_PROC_NUM+2];
 void schedule_init()
 {
@@ -22,6 +25,7 @@ void schedule_init()
 	for (i=0;i<mx-1;i++)
 	{
 		free[i][1]=i+1;
+		waitsid[i]=-1;
 	}
 	free[mx-1][1]=-1;
 	free[0][0]=-1;
@@ -98,6 +102,13 @@ void sch_sleep(uint32_t slot,uint32_t ms)
 	}
 }
 
+void sch_pwait(uint32_t slot,uint32_t sid)
+{
+	status[slot]=6;
+	waitsid[slot]=sid;
+	printk("pwait set slot:%d sid:%d\n",slot,sid);
+}
+
 void set_status(uint32_t slot,uint32_t type)
 {
 	status[slot]=type;
@@ -115,11 +126,17 @@ uint32_t change_process(uint32_t slot)
 	//	printk("monitor %d\n",slot);
 		if ((status[slot]==1 && (sleepcnt[slot]<tm_cnt)) || status[slot]==3)
 		{
-			printk("sleep out\n");
+			//printk("%x sleep out\n",slot);
 	//		monitor_flag=false;
 			tp_slot=slot;
 			status[slot]=0;
 			return tp_slot;	
+		}
+		else if (status[slot]==6 && p(waitsid[slot])==1)	
+		{
+			status[slot]=0;
+			tp_slot=slot;
+			return tp_slot;
 		}
 		if (slot==pslot)
 		{

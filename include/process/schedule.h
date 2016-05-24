@@ -7,5 +7,6 @@ void release_slot(uint32_t);
 void sch_sleep(uint32_t,uint32_t);
 uint32_t change_process(uint32_t);
 void set_status(uint32_t,uint32_t);
+void sch_pwait(uint32_t,uint32_t);
 void idle();
 #endif

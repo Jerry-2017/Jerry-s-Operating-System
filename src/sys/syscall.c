@@ -7,6 +7,7 @@
 #include "include/device/com.h"
 #include "include/device/gdt.h"
 #include "include/process/pcb.h"
+#include "include/process/semaphore.h"
 
 void syscall_main(uint32_t intno, uint32_t choice, uint32_t ecx, uint32_t edx)
 {
@@ -45,8 +46,30 @@ void syscall_main(uint32_t intno, uint32_t choice, uint32_t ecx, uint32_t edx)
 		{
 			printk("call fork\n");
 			fork();
+			break;
 		}
-
+		case 7:  //new_semaphore ecx addr edx seg
+		{
+			uint32_t sid=open_semaphore();
+			uint32_t off=getbase(edx);
+			*((uint32_t*)(ecx+off))=sid;
+			printk("new syscall semaphore segoff:%x off:%x  sid:%d\n",off,ecx,sid);
+			break;
+		}
+		case 8: //p semaphore ecx sid
+		{
+			if (p(ecx)!=1)
+			{
+			//	printk("p syscall %x sid\n",ecx);
+				pwait(ecx);
+			}
+			break;
+		}
+		case 9:
+		{
+			v(ecx);
+			break;
+		}
 	}
 }
 

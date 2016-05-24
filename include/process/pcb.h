@@ -16,6 +16,7 @@ struct ProgramControlBlock{
 };
 typedef struct ProgramControlBlock pcb;
 void sleep(uint32_t);
+void pwait(uint32_t);
 void init_pcb();
 int get_pcb();
 void set_pcb_ex(uint16_t index,uint32_t off);

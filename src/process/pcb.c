@@ -5,10 +5,17 @@
 #include "include/process/schedule.h"
 #include "include/device/tss.h"
 #include "include/device/gdt.h"
+#include "include/process/semaphore.h"
 
 pcb proc[MAX_PROC_NUM];
 uint32_t cpcb_i;
 //uint32_t id=0;
+
+void pwait(uint32_t sid)
+{
+	sch_pwait(cpcb_i,sid);
+	change_pcb();
+}
 
 void init_pcb()
 {
@@ -19,7 +26,7 @@ void init_pcb()
 		proc[i].is_used=0;
 		proc[i].paddr=0x1000000+i*0x2000000;
 		proc[i].dataseg=0x28+0x3;
-		proc[i].extra=0;
+		proc[i].extra=i;
 		proc[i].codeseg=0x30+0x3;
 		proc[i].stackseg=0x48+0x3;
 	}
@@ -48,7 +55,7 @@ int get_pcb()
 }
 void set_pcb_ex(uint16_t index,uint32_t off)
 {
-	set_pcb(index,off,0x1ffff00);
+	set_pcb(index,off,0x1800000);
 }
 void set_pcb(uint16_t index,uint32_t off,uint32_t esp)
 {
@@ -57,7 +64,7 @@ void set_pcb(uint16_t index,uint32_t off,uint32_t esp)
 //	proc[i].dataseg=0x28+0x3;//dataseg;
 //	proc[i].codeseg=0x30+0x3;//codeseg;
     uint32_t tp;
-	proc[i].ptr=&(proc[i].stack[MAX_STACK-0x20]);
+	proc[i].ptr=&(proc[i].stack[MAX_STACK-128]);
 	printk("choos ptr:%x\n",proc[i].ptr);
 	asm __volatile__("mov %%esp,%%ebx\n\tmov %0,%%esp\n\tpush %%ecx\n\tmov %2,%%ecx\n\tpush %%ecx\n\tpushf\n\tpush %%eax\n\tpush %%edx\n\tmov %%esp,%0\n\tmov %%ebx,%%esp":"=m"(proc[i].ptr),"=c"(tp):"m"(proc[i].esp),"c"(proc[i].stackseg),"a"(proc[i].codeseg),"d"(off):"%ebx");
 	//printk("esp %x\n",tp);
@@ -68,7 +75,7 @@ void set_pcb(uint16_t index,uint32_t off,uint32_t esp)
 void save_pcb()
 {
 	uint8_t *i=(uint8_t*)tss.esp0;
-	uint8_t *j=&(proc[cpcb_i].stack[MAX_STACK-0x20]);
+	uint8_t *j=&(proc[cpcb_i].stack[MAX_STACK-128]);
 	int cnt=0;
 	for	(;cnt<0x20;cnt++)
 	{
@@ -129,6 +136,7 @@ void fork()
 		*(daddr++)=*(saddr++);		
 	}
 	copy_pcb(cpcb_i,no);
+	set_status(no,3);
 	proc[cpcb_i].extra=1;
 	proc[no].extra=2;
 	proc[no].paddr=paddr;

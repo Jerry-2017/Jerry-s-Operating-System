@@ -4,6 +4,11 @@
 
 void exit();
 void sleep(uint32_t time);//time
+uint32_t open_semaphore();
+void sem_wait(uint32_t);
+void sem_post(uint32_t);
+
+
 uint32_t fork();
 uint32_t forkex();
 void lock(int*);
