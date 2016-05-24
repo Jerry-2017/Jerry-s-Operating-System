@@ -12,6 +12,13 @@ void sleep(uint32_t time)
 	return;	
 }
 
+uint32_t fork()
+{
+	uint32_t id;
+	asm("mov $0x6,%%ebx\n\tint $0x80":"=a"(id)::);
+	return id;
+}
+
 uint32_t id;
 
 uint32_t forkex()

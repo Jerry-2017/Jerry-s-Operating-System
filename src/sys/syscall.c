@@ -37,10 +37,16 @@ void syscall_main(uint32_t intno, uint32_t choice, uint32_t ecx, uint32_t edx)
 		}
 		case 5:   
 		{		//refresh
-			printk("into 0x80 5func:\n");
+//			printk("into 0x80 5func:\n");
 			change_pcb();
 			break;
 		}
+		case 6:
+		{
+			printk("call fork\n");
+			fork();
+		}
+
 	}
 }
 

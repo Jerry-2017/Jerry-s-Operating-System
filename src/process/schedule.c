@@ -63,11 +63,11 @@ void idle ()
 		i=0;
 		j=0;
 		for (;j<100;j++)
-			for (i=0;i<10000000;i++);
+			for (i=0;i<100000;i++);
 //		printkex("I'm in idle\n");
 		//output_ex("idle gogo\n");
 		asm ("push %%ebx\n\tmov $0x5,%%ebx\n\tint $0x80\n\tpop %%ebx\n\tnop\n\tnop\n\tnop":::);
-		output_ex("idle gogo\n");
+//		output_ex("idle gogo\n");
 	}
 }
 

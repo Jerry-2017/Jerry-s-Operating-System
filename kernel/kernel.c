@@ -63,6 +63,8 @@ void loadprog()
 
 int main()
 {
+	setgdt(0x40,0x5,0,0xffffffff);
+	asm ("mov $0x40,%%ax\n\tmov %%ax,%%ss":::"%eax");
 	ioinit();
 	procinit();
 	printk("kernel\n");

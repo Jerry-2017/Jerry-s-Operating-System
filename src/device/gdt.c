@@ -3,11 +3,15 @@
 
 void setgdt(uint32_t no,uint32_t type,uint32_t base,uint32_t limit)
 {
-	uint8_t typearr[5]={	0x92,		//ring 0 data write allow 10010010
+	// P DEL :2 S E ED/C W/R A
+	uint8_t typearr[7]={	0x92,		//ring 0 data write allow 10010010
 					0x9a,		//ring 0 code read allow 10011010
 					0xf2,		//ring 3 data
 					0xfa,		//ring 3 code
-					0x89
+					0x89,
+					//edited to add stack
+					0x96,	//ring 0 stack write allow 10010110
+					0xf6	// ring 3 stack
 };	
 	uint8_t* ps=(void*)(GDT_ENTRY+((no>>3)<<3));
 	*((uint16_t*)ps)=(uint16_t)(limit&0xffff);
