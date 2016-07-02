@@ -39,3 +39,46 @@ void readsects(void *dst, uint32_t offset, uint32_t count)
 	}
 }
 
+void writesect(uint32_t secno, const void *src, uint32_t nsecs)
+{
+	//assert(nsecs <= 256);
+
+	waitdisk();
+
+	outb(0x1F2, nsecs);
+	outb(0x1F3, secno & 0xFF);
+	outb(0x1F4, (secno >> 8) & 0xFF);
+	outb(0x1F5, (secno >> 16) & 0xFF);
+	outb(0x1F6, 0xE0 | ((0&1)<<4) | ((secno>>24)&0x0F));
+	outb(0x1F7, 0x30);	// CMD 0x30 means write sector
+
+	for (; nsecs > 0; nsecs--, src += SECTSIZE) {
+		waitdisk();
+		outsl(0x1F0, src, SECTSIZE/4);
+	}
+
+	return ;
+}
+
+void writesects(void *src,uint32_t  offset,uint32_t count)
+{
+	int cnt=0;
+	while (cnt<count)
+	{
+		writesect(offset,src+cnt*SECTSIZE,1);
+		offset++;
+		cnt++;	
+	}
+	return ;
+}
+
+int fread(const char* fname,uint32_t addr)
+{
+   readsects((void*)0x1800000,0x300,0x500);
+   return 0;
+}
+
+int finit()
+{
+   return 0;
+}

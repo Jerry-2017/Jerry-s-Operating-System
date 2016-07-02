@@ -23,8 +23,19 @@ int main()
 //	int i=forkex();
 	while (1)
 	{
-           sleep(100);
-           printkex("i'm alive\n");
+//		sem_wait(mutex);
+		//printkex("i'm alive %x lock %x a %x\n",i,consumer,a);
+		if (i==1) {	 //consumer
+			printkex("one consumer wait for product\n");
+			sem_wait(consumer);
+		}
+		else
+		{
+			printkex("one product is produced\n");
+			sem_post(consumer);
+			sleep(1000);
+		}
+//		sem_post(mutex);
 	}
 	return 0;
 }

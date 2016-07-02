@@ -13,6 +13,7 @@
 #include "include/process/pcb.h"
 #include "include/process/monitor.h"
 #include "include/process/schedule.h"
+#include "include/file/file.h"
 
 #define GAME_SECTORS 0x300
 #define GAME_LEN 0x500
@@ -37,12 +38,14 @@ void procinit()
 	init_monitor();
 	schedule_init();
 	init_pcb();
+        finit();
 }
 
 void loadprog()
 {
 //08 sys data 10 sys code
-	readsects((void*)PROGRAM_START,GAME_SECTORS,GAME_LEN);
+	//readsects((void*)PROGRAM_START,GAME_SECTORS,GAME_LEN);
+        fread("Prog.o",PROGRAM_START);
 	//readsects((void*)(0x3000000),PIC_START,PIC_LEN);
 	int no=get_pcb();
 	uint32_t addr=pcb_paddr(no);
