@@ -5,9 +5,9 @@ The project is done as a course project for Operating System. And the version I 
 Some known bugs including Ctrl-c for shell not properly work.
 
 The Screen Shot
-![image](https://github.com/Jerry-2017/Jerry-s-Operating-System/new/master/images/1.png)
-![image](https://github.com/Jerry-2017/Jerry-s-Operating-System/new/master/images/2.png)
-![image](https://github.com/Jerry-2017/Jerry-s-Operating-System/new/master/images/catecho.png)
+![image](https://github.com/Jerry-2017/Jerry-s-Operating-System/raw/master/images/1.png)
+![image](https://github.com/Jerry-2017/Jerry-s-Operating-System/raw/master/images/2.png)
+![image](https://github.com/Jerry-2017/Jerry-s-Operating-System/raw/master/images/catecho.png)
 cat&echo
 
 The project is for referrence, if you want to and have trouble running it, please contact me.
